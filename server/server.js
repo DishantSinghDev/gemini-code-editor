@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = 5555;
 const apiKey = process.env.GEMINI_API_KEY
-
+const credentails = 'server/Credentials/lofty-block-415112-dc2cce1356ff.json'
 
 // Use CORS middleware to allow requests from different origins
 app.use(cors({
@@ -56,7 +56,7 @@ app.post("/voice", async (req, res) => {
         return res.status(400).json({ error: "SSML is required" });
     }
 
-    const client = new textToSpeech.TextToSpeechClient();
+    const client = new textToSpeech.TextToSpeechClient(credentails);
 
     const request = {
         input: { ssml: ssml },
@@ -70,7 +70,7 @@ app.post("/voice", async (req, res) => {
         // Set the correct content type and send the audio content directly
         res.set('Content-Type', 'audio/mp3');
         res.send(response.audioContent);
-        
+
     } catch (error) {
         console.error("Error processing speech:", error);
         res.status(500).json({ error: 'Error processing request' });
