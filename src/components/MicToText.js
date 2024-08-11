@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import WaveForm from "./WaveForm";
 import { Mic, MicOff } from "lucide-react";
-import useTextToSpeechAnalyzer from "./TTS";
+import TextToSpeechAnalyzer from "./TTS";
 import LangsDropdown from "./LangDrodown";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -138,7 +138,7 @@ function MicToT() {
                 />
                 <button disabled={!tAFocused} className={`${tAFocused ? "hover:bg-gray-100 " : "opacity-50"} text-sm text-gray-500 duration-100 transition bg-gray-20 py-0.5 px-1.5 rounded-md`}>Send</button>
             </div>
-            <useTextToSpeechAnalyzer text="hello how are you doing" />
+            <TextToSpeechAnalyzer text="hello how are you doing" />
         </>
     );
 }

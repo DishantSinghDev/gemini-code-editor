@@ -1,15 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { processSpeech } from '../api';
 
-const useTextToSpeechAnalyzer = async (text) => {
+const TextToSpeechAnalyzer = async (text) => {
     const speech = await processSpeech(text)
-
     return (
         <>
-        {speech}
+        Hello
         
         </>
     );
 };
 
-export default useTextToSpeechAnalyzer;
+export default TextToSpeechAnalyzer;

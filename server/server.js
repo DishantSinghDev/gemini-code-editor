@@ -1,9 +1,10 @@
 const express = require("express");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const { SpeechClient } = require('@google-cloud/speech');
-const util = require('util');
 const dotenv = require('dotenv');
 const cors = require('cors');  // Import the cors package
+const textToSpeech = require('@google-cloud/text-to-speech');
+const fs = require('fs');
+const util = require('util');
 
 dotenv.config();
 
@@ -49,46 +50,27 @@ app.post("/", async (req, res) => {
 
 // New route for processing speech input
 app.post("/voice", async (req, res) => {
-    const { audioBase64 } = req.body;
+    const { ssml } = req.body;
 
-    if (!audioBase64) {
-        return res.status(400).json({ error: "Audio data is required" });
+    if (!ssml) {
+        return res.status(400).json({ error: "SSML is required" });
     }
 
-    const apiKey = process.env.GOOGLE_API_KEY;
-    if (!apiKey) {
-        return res.status(500).json({ error: "API Key is not configured" });
-    }
+    const client = new textToSpeech.TextToSpeechClient();
 
-    const generativeAI = new GoogleGenerativeAI(apiKey);
-    const speechClient = new SpeechClient();
+    const request = {
+        input: { ssml: ssml },
+        voice: { languageCode: 'en-US', ssmlGender: 'FEMALE' },
+        audioConfig: { audioEncoding: 'MP3' },
+    };
 
     try {
-        // Decode base64 audio data
-        const audioBuffer = Buffer.from(audioBase64, 'base64');
+        const [response] = await client.synthesizeSpeech(request);
 
-        // Convert audio to text using Google Speech-to-Text
-        const [response] = await speechClient.recognize({
-            audio: {
-                content: audioBuffer.toString('base64'),
-            },
-            config: {
-                encoding: 'LINEAR16',
-                sampleRateHertz: 16000,
-                languageCode: 'en-US',
-            },
-        });
-
-        const transcription = response.results
-            ? response.results.map(result => result.alternatives?.[0]?.transcript ?? '').join('\n') ?? ''
-            : '';
+        // Set the correct content type and send the audio content directly
+        res.set('Content-Type', 'audio/mp3');
+        res.send(response.audioContent);
         
-        const model = generativeAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(transcription);
-        const resp = await result.response;
-        const text = resp.text();
-
-        res.status(200).json({ result: text });
     } catch (error) {
         console.error("Error processing speech:", error);
         res.status(500).json({ error: 'Error processing request' });

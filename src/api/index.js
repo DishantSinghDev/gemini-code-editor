@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 // Base URL of your Express API
-const API_URL = 'http://localhost:5555'; // Update this if your Express server URL changes
+const API_URL = 'http://139.59.67.223'; // Update this if your Express server URL changes
 
 // Function to generate content
 export const generateContent = async (prompt) => {
