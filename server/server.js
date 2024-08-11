@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 const PORT = 5555;
 const apiKey = process.env.GEMINI_API_KEY
-const credentails = 'server/Credentials/lofty-block-415112-dc2cce1356ff.json'
+const credentails = 'credentials/cred.json'
 
 // Use CORS middleware to allow requests from different origins
 app.use(cors({
