@@ -15,7 +15,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd }) => {
             try {
                 setError(null); // Clear any previous errors
                 if (prompt) { // Ensure prompt is not empty before making the request
-                    const response = await generateContent(`${prompt}. Act like you are a professional coder with great communication skills. If the input is a general greeting like "hi," respond with just "Hello" and nothing else. For other specific requests requiring code, generate the {code enclosed in curly braces} at the top. Provide tutorials or suggestions in (simple SSML format) below the code for improved voice interaction.`);
+                    const response = await generateContent(`${prompt}. Act like you are a professional coder with great communication skills. If the input is a general greeting like "hi," respond with just "the greetings back" and nothing else. For other specific requests requiring code, generate the {code enclosed in curly braces} at the top. Provide tutorials or suggestions in (SSML format only no markdown) below the code for improved voice interaction.`);
                     console.log(response)
                     setSsml(response);
                     responseEnd(true)
