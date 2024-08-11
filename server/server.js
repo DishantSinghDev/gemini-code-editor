@@ -8,7 +8,7 @@ const cors = require('cors');  // Import the cors package
 dotenv.config();
 
 const app = express();
-const PORT = 3001;
+const PORT = 5555;
 const apiKey = process.env.GEMINI_API_KEY
 
 
