@@ -4,7 +4,7 @@ import { useState, Dispatch, SetStateAction, useCallback, useMemo } from "react"
 const CustomModal = (
   showCustomModal,
   setShowCustomModal,
-  children,) => {
+  children) => {
   return (
     <Modal showModal={showCustomModal} setShowModal={setShowCustomModal}>
       {children}

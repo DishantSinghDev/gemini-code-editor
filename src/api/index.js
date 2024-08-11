@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 // Base URL of your Express API
-const API_URL = 'http://139.59.67.223'; // Update this if your Express server URL changes
+const API_URL = 'https://gemini-ide-server.dishantsingh.me'; // Update this if your Express server URL changes
 
 // Function to generate content
 export const generateContent = async (prompt) => {
@@ -17,10 +17,23 @@ export const generateContent = async (prompt) => {
 };
 
 // Function to process speech
-export const processSpeech = async (audioBase64) => {
+export const processSpeech = async (ssml) => {
     try {
-        const response = await axios.post(`${API_URL}/voice`, { audioBase64 });
-        return response.data;
+        const response = await fetch(`${API_URL}/voice`, {
+            body: JSON.stringify({ ssml }),
+            headers: {
+                'Content-Type': 'application/json', // Ensure the content type is set
+            },
+            method: 'POST',
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Get the response as a binary buffer
+        const audioBlob = await response.blob();
+        return audioBlob; // Return the Blob for handling in the frontend
     } catch (error) {
         console.error('Error processing speech:', error);
         throw new Error('Error processing speech');

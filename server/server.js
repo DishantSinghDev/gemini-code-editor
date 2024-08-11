@@ -3,8 +3,6 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const dotenv = require('dotenv');
 const cors = require('cors');  // Import the cors package
 const textToSpeech = require('@google-cloud/text-to-speech');
-const fs = require('fs');
-const util = require('util');
 
 dotenv.config();
 
@@ -23,7 +21,7 @@ app.use(cors({
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-app.post("/", async (req, res) => {
+app.post("/generate", async (req, res) => {
     const { prompt } = req.body;
     console.log(prompt, apiKey);
 
@@ -60,7 +58,7 @@ app.post("/voice", async (req, res) => {
 
     const request = {
         input: { ssml: ssml },
-        voice: { languageCode: 'en-US', ssmlGender: 'FEMALE' },
+        voice: { languageCode: 'en-US', ssmlGender: 'MALE' },
         audioConfig: { audioEncoding: 'MP3' },
     };
 

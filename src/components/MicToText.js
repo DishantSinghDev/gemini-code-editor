@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import WaveForm from "./WaveForm";
 import { Mic, MicOff } from "lucide-react";
-import TextToSpeechAnalyzer from "./TTS";
+import TTS from "./AI/TTS";
 import LangsDropdown from "./LangDrodown";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -9,7 +9,6 @@ const mic = new SpeechRecognition();
 
 function MicToT() {
     const [isListening, setIsListening] = useState(false);
-    const [saying, setSaying] = useState(true);
     const [note, setNote] = useState("");
     const [analyzerData, setAnalyzerData] = useState(null);
     const [language, setLanguage] = useState("en-US");
@@ -81,7 +80,6 @@ function MicToT() {
         };
 
         if (isListening) {
-            setSaying(false);
             startMic();
             setupAudioContext();
         } else {
@@ -108,7 +106,11 @@ function MicToT() {
     };
 
     // Adjust the textarea size based on content
-
+    const handleAudioEnded = (bool) => {
+        if (bool) {
+            setIsListening(true)
+        }
+    }
 
     return (
         <>
@@ -137,8 +139,8 @@ function MicToT() {
                     aria-label="Command input area" // Improve accessibility
                 />
                 <button disabled={!tAFocused} className={`${tAFocused ? "hover:bg-gray-100 " : "opacity-50"} text-sm text-gray-500 duration-100 transition bg-gray-20 py-0.5 px-1.5 rounded-md`}>Send</button>
+                <TTS audioEnded={handleAudioEnded} ssml="<speak>Hello, What do you want me to do?</speak>" />
             </div>
-            <TextToSpeechAnalyzer text="hello how are you doing" />
         </>
     );
 }
