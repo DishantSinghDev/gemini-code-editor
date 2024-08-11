@@ -56,7 +56,7 @@ app.post("/voice", async (req, res) => {
         return res.status(400).json({ error: "SSML is required" });
     }
 
-    const client = new textToSpeech.TextToSpeechClient(credentails);
+    const client = new textToSpeech.TextToSpeechClient({ keyFile: credentails});
 
     const request = {
         input: { ssml: ssml },
