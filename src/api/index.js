@@ -6,9 +6,9 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3001'; // Update this if your Express server URL changes
 
 // Function to generate content
-export const generateContent = async (prompt, apiKey) => {
+export const generateContent = async (prompt) => {
     try {
-        const response = await axios.post(`${API_URL}/`, { prompt, apiKey });
+        const response = await axios.post(`${API_URL}/`, { prompt });
         return response.data;
     } catch (error) {
         console.error('Error generating content:', error);

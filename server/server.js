@@ -9,6 +9,8 @@ dotenv.config();
 
 const app = express();
 const PORT = 3001;
+const apiKey = process.env.GEMINI_API_KEY
+
 
 // Use CORS middleware to allow requests from different origins
 app.use(cors({
@@ -21,7 +23,7 @@ app.use(cors({
 app.use(express.json());
 
 app.post("/", async (req, res) => {
-    const { prompt, apiKey } = req.body;
+    const { prompt } = req.body;
     console.log(prompt, apiKey);
 
     if (!prompt) {
