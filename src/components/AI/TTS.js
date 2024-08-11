@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import SoundIcon from '../shared/icons/animatedSound';
 import { processSpeech } from '../../api';
 
-const TTS = ({ ssml, audioEnded }) => {
+const TTS = ({ ssml, audioEnded, autoplay }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [url, setUrl] = useState("");
     const audioPlayerRef = useRef(null);
@@ -24,6 +24,7 @@ const TTS = ({ ssml, audioEnded }) => {
                 const response = await processSpeech(ssml);
                 const newUrl = URL.createObjectURL(response);
                 setUrl(newUrl);
+                console.log(newUrl)
 
                 // Clean up previous URL
                 if (url) {
@@ -34,12 +35,18 @@ const TTS = ({ ssml, audioEnded }) => {
                 console.error('Error processing speech:', error);
             }
         };
+        if (ssml) {
+            handleProcessSpeech();
+        }
 
-        handleProcessSpeech();
+        
     }, [ssml]);
 
     useEffect(() => {
         // Cleanup URL on component unmount
+        if (autoplay && url) {
+            playAudio()
+        }
         return () => {
             if (url) {
                 URL.revokeObjectURL(url);
@@ -47,14 +54,15 @@ const TTS = ({ ssml, audioEnded }) => {
         };
     }, [url]);
 
+
     return (
         <div onClick={() => {
             playAudio();
         }}>
             <SoundIcon animate={isPlaying} className="text-black cursor-pointer h-10 w-10" />
-            <audio 
-                ref={audioPlayerRef} 
-                src={url} 
+            <audio
+                ref={audioPlayerRef}
+                src={url}
                 className='hidden'
                 onEnded={() => {
                     setIsPlaying(false)

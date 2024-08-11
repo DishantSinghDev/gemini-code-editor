@@ -8,8 +8,15 @@ const API_URL = 'https://gemini-ide-server.dishantsingh.me'; // Update this if y
 // Function to generate content
 export const generateContent = async (prompt) => {
     try {
-        const response = await axios.post(`${API_URL}/`, { prompt });
-        return response.data;
+        const response = await fetch(`${API_URL}/generate`,  {
+            body: JSON.stringify({ prompt }),
+            headers: {
+                'Content-Type': 'application/json', // Ensure the content type is set
+            },
+            method: 'POST',
+        });
+        const text = await response.text()
+        return text;
     } catch (error) {
         console.error('Error generating content:', error);
         throw new Error('Error generating content');
