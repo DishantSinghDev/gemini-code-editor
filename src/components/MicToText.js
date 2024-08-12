@@ -139,9 +139,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
         if (bool) {
             setIsListening(true);
             setNote("")
-        } else if (!bool) {
-            setLoading(false);
-        }
+        } 
     };
 
     const handleCommandSend = (e) => {

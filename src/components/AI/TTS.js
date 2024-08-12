@@ -40,7 +40,7 @@ const TTS = ({ ssml, audioEnded, autoplay, audioStarted }) => {
             } catch (error) {
                 showErrorToast('Failed to process speech. Please try again.');
                 console.error('Error processing speech:', error);
-                audioEnded(false);
+                audioEnded(true);
             }
         };
         
