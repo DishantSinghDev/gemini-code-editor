@@ -32,12 +32,15 @@ export function useParseResponse(response) {
         }
       }
 
+      // Remove unnecessary symbols from SSML
+      const cleanSSML = response
+        ? response.replace(codeRegex, "").replace(/[`,*]/g, "").trim() // Removing unwanted symbols
+        : "";
+
       // Update state
       setCode(extractedCode);
       setLanguage(detectedLanguage);
-
-      const ssml = response ? response.replace(codeRegex, "").trim() : "";
-      setSsmlText(ssml);
+      setSsmlText(cleanSSML);
     };
 
     extractCodeAndLanguage();

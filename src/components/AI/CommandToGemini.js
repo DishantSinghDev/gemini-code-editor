@@ -2,11 +2,8 @@ import { useEffect, useState } from "react";
 import { generateContent } from "../../api";
 import TTS from "./TTS";
 import { useParseResponse } from "../../utils/parse-gen-code";
-import e from "cors";
+import PopUpToast, { showSuccessToast, showErrorToast } from "../PopUpToast";
 
-export function fecthContent() {
-
-}
 
 const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeLang }) => {
     const [error, setError] = useState(null); // Added state for error handling
@@ -34,6 +31,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeL
             } catch (error) {
                 console.error('Error processing speech:', error);
                 responseEnd(true)
+                showErrorToast('Failed to generate content. Please try again.'); // Show error toast
                 setError('Failed to generate content. Please try again.'); // Set user-friendly error message
             }
         };
@@ -47,6 +45,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeL
 
     return (
         <div>
+            <PopUpToast />
             <TTS audioEnded={audioEnded} autoplay={true} ssml={ssmlText} />
             {error && <p className="text-sm text-red-500">{error}</p>} {/* Display error if any */}
         </div>

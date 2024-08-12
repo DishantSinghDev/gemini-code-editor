@@ -6,6 +6,7 @@ import LangsDropdown from "./LangDrodown";
 import GenerateContent from "./AI/CommandToGemini";
 import { Spinner } from "flowbite-react";
 import BarIcon from "./shared/icons/animatedBar";
+import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const mic = new SpeechRecognition();
@@ -35,7 +36,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 mic.start();
                 console.log("Mic started");
             } catch {
-
+                showErrorToast("Error starting the microphone");
             }
             isMicRunningRef.current = true;
             mic.onend = () => {
@@ -60,7 +61,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
             try {
                 mic.stop();
             } catch {
-
+                showErrorToast("Error stopping the microphone");
             }
             isMicRunningRef.current = false;
         }
@@ -182,6 +183,8 @@ function MicToT({ code, generateCode, codeLanguage }) {
 
 
     return (
+        <>
+        <PopUpToast />
         <div className="flex gap-2 w-fit items-center">
             <LangsDropdown onSelectChange={onSelectChange} />
             <button
@@ -219,6 +222,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 <GenerateContent genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
+        </>
     );
 }
 

@@ -4,7 +4,7 @@ import axios from "axios";
 import { classnames } from "../utils/general";
 import { languageOptions } from "../constants/languageOptions";
 import { encode } from "base-64";
-import { ToastContainer, toast } from "react-toastify";
+import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 import "react-toastify/dist/ReactToastify.css";
 
 import { defineTheme } from "../lib/defineTheme";
@@ -20,35 +20,7 @@ import SignIn from "./SignInPopUp";
 import { auth, signInWithGooglePopup } from "../utils/firebase.utils";
 import { onAuthStateChanged } from "firebase/auth";
 
-const javascriptDefault = `/**
-* Problem: Binary Search: Search a sorted array for a target value.
-*/
-
-// Time: O(log n)
-const binarySearch = (arr, target) => {
- return binarySearchHelper(arr, target, 0, arr.length - 1);
-};
-
-const binarySearchHelper = (arr, target, start, end) => {
- if (start > end) {
-   return false;
- }
- let mid = Math.floor((start + end) / 2);
- if (arr[mid] === target) {
-   return mid;
- }
- if (arr[mid] < target) {
-   return binarySearchHelper(arr, target, mid + 1, end);
- }
- if (arr[mid] > target) {
-   return binarySearchHelper(arr, target, start, mid - 1);
- }
-};
-
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const target = 5;
-console.log(binarySearch(arr, target));
-`;
+const javascriptDefault = ``;
 
 const Landing = () => {
   const [code, setCode] = useState(javascriptDefault);
@@ -57,8 +29,8 @@ const Landing = () => {
   const [processing, setProcessing] = useState(false); // Changed from null to false
   const [theme, setTheme] = useState("cobalt");
   const [language, setLanguage] = useState(languageOptions[0]);
+  const [user, setUser] = useState(null);
   const [codeChanged, setCodeChanged] = useState(true);
-
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
@@ -87,9 +59,6 @@ const Landing = () => {
   };
 
   const handleCompile = () => {
-    console.log("API URL:", process.env.REACT_APP_RAPID_API_URL);
-console.log("API Host:", process.env.REACT_APP_RAPID_API_HOST);
-console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
 
     setProcessing(true);
     const formData = {
@@ -124,6 +93,7 @@ console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
           showErrorToast(`Quota of 100 requests exceeded for the Day! Please try again later.`, 10000);
         }
         setProcessing(false);
+        showErrorToast("Error during axios request!");
         console.error("Error during compilation:", error);
       });
   };
@@ -173,29 +143,7 @@ console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
     );
   }, []);
 
-  const showSuccessToast = (msg) => {
-    toast.success(msg || `Compiled Successfully!`, {
-      position: "top-right",
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
 
-  const showErrorToast = (msg, timer) => {
-    toast.error(msg || `Something went wrong! Please try again.`, {
-      position: "top-right",
-      autoClose: timer || 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
 
   const handleGenCode = (code) => {
     if (code) {
@@ -211,19 +159,22 @@ console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
     }
   }
 
+  // Firebase Auth
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
   return (
     <>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+      <PopUpToast />
 
       <SignIn />
 
@@ -235,9 +186,13 @@ console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
         <div className="px-4 py-2">
           <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
         </div>
-        <div className="px-4">
-          <MicToT code={code} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
-        </div>
+        {user ? (
+          <div className="px-4">
+            <MicToT code={code} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="flex flex-row space-x-4 items-start px-4 py-4">
         <div className="flex flex-col w-full h-full justify-start items-end">
@@ -260,10 +215,10 @@ console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
             />
             <button
               onClick={handleCompile}
-              disabled={!code}
+              disabled={!code || !user}
               className={classnames(
                 "mt-4 border-2 border-black z-10 rounded-md shadow-[5px_5px_0px_0px_rgba(0,0,0)] px-4 py-2 hover:shadow transition duration-200 bg-white flex-shrink-0",
-                !code ? "opacity-50" : ""
+                !code || !user ? "opacity-50" : ""
               )}
             >
               {processing ? "Processing..." : "Compile and Execute"}

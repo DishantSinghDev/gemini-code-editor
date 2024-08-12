@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import SoundIcon from '../shared/icons/animatedSound';
 import { processSpeech } from '../../api';
+import PopUpToast, { showSuccessToast, showErrorToast } from "../PopUpToast";
 
 const TTS = ({ ssml, audioEnded, autoplay }) => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -36,6 +37,7 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
                 }
 
             } catch (error) {
+                showErrorToast('Failed to process speech. Please try again.');
                 console.error('Error processing speech:', error);
             }
         };
@@ -60,6 +62,8 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
     }, [url, autoplay]);
 
     return (
+        <>
+        <PopUpToast />
         <div onClick={toggleAudio}>
             <SoundIcon animate={isPlaying} className="text-black cursor-pointer h-10 w-10" />
             <audio
@@ -74,6 +78,7 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
                 Your browser does not support the audio element.
             </audio>
         </div>
+        </>
     );
 };
 
