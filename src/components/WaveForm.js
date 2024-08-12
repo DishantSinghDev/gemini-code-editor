@@ -28,7 +28,7 @@ const WaveForm = ({ analyzerData }) => {
       // Calculate amplitude based on frequency data
       const sum = dataArray.reduce((acc, val) => acc + val, 0);
       const average = sum / bufferLength;
-      setAmplitude(Math.max(0, (average / 255) * (0.5 * height))); // Normalize to height
+      setAmplitude(Math.max(0, (average / 255) * (0.35 * height))); // Normalize to height
 
       // Set speed based on frequency data or other logic
       setSpeed(0.05 + (average / 255) * 0.2); // Example adjustment for speed
