@@ -23,7 +23,11 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeL
             try {
                 setError(null); // Clear any previous errors
                 if (prompt) { // Ensure prompt is not empty before making the request
-                    const response = await generateContent(`User Prompt: ${prompt}, User Code: [${code}]. Act like you are a professional coder with great communication skills. If the user prompt is a general greeting like "hi," respond with just "the greetings back" and nothing else. For other specific requests requiring code, generate the {code enclosed}. Provide other texts in (SSML format only no markdown) for improved voice interaction (no emojis).`);
+                    const response = await generateContent(`User Prompt: ${prompt}
+
+User Code: [${code}]
+
+Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an "appropriate greeting." For questions or tutorial requests, use proper code and best practices to demonstrate the answer. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points in SSML format only. For non-code requests, respond in SSML format only, without markdown or emojis.`);
                     setResponse(response); // Store the response in state
                     console.log("response", response);
                     responseEnd(true)

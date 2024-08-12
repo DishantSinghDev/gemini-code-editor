@@ -54,26 +54,32 @@ app.post("/voice", async (req, res) => {
         return res.status(400).json({ error: "SSML is required" });
     }
 
-    const client = new textToSpeech.TextToSpeechClient({ keyFilename: credentails});
-
-    const request = {
-        input: { ssml: ssml },
-        voice: { languageCode: 'en-US', ssmlGender: 'MALE' },
-        audioConfig: { audioEncoding: 'MP3' },
-    };
-
     try {
+        const client = new textToSpeech.TextToSpeechClient({ keyFilename: credentials });
+
+        const request = {
+            input: { ssml },
+            voice: {
+                languageCode: 'en-US',
+                name: 'en-US-neural2-H',  // Example of a casual voice
+                ssmlGender: 'MALE'
+            },
+            audioConfig: { 
+                audioEncoding: 'MP3',
+                model: 'latest-short'  // Use the latest short-form (casual) voice model
+            },
+        };
+
         const [response] = await client.synthesizeSpeech(request);
 
-        // Set the correct content type and send the audio content directly
         res.set('Content-Type', 'audio/mp3');
         res.send(response.audioContent);
-
     } catch (error) {
         console.error("Error processing speech:", error);
         res.status(500).json({ error: 'Error processing request' });
     }
 });
+
 
 
 app.listen(PORT, (error) => {

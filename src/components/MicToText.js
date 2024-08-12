@@ -19,7 +19,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
     const [tAFocused, setTAFocused] = useState(false);
     const [loading, setLoading] = useState(false);
     const [noteError, setNoteError] = useState("");
-    const [prompt, setPrompt] = useState("Greet the Developer");
+    const [prompt, setPrompt] = useState("Hello!");
 
     const audioContextRef = useRef(null);
     const analyzerRef = useRef(null);
