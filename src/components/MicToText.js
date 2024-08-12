@@ -34,9 +34,8 @@ function MicToT({code}) {
             try {
                 console.log("mic Started")
                 mic.start();
-
             } catch {
-
+                
             }
             isMicRunningRef.current = true;
             mic.onend = () => {
@@ -47,6 +46,7 @@ function MicToT({code}) {
                 const transcript = Array.from(event.results)
                     .map((result) => result[0].transcript)
                     .join(" ");
+                console.log(transcript)
                 setNote(note + " " + transcript);
             };
 
