@@ -126,11 +126,21 @@ function MicToT({ code, generateCode, codeLanguage }) {
         setNote(event.target.value);
     };
 
+    const handleAudioStarted = (bool) => {
+        if (bool) {
+            setLoading(false);
+            setNote("");
+            setPrompt("");
+            setIsListening(false);
+        }
+    };
+
     const handleAudioEnded = (bool) => {
         if (bool) {
             setIsListening(true);
-            
             setNote("")
+        } else if (!bool) {
+            setLoading(false);
         }
     };
 
@@ -150,10 +160,6 @@ function MicToT({ code, generateCode, codeLanguage }) {
 
     const handleResponseEnd = (bool) => {
         if (bool) {
-            setLoading(false);
-            setNote("");
-            setPrompt("");
-            setIsListening(false);
         }
     };
 
@@ -219,7 +225,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 </button>
             </form>
             <div>
-                <GenerateContent genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
+                <GenerateContent audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
         </>

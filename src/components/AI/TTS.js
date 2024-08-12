@@ -3,7 +3,7 @@ import SoundIcon from '../shared/icons/animatedSound';
 import { processSpeech } from '../../api';
 import PopUpToast, { showSuccessToast, showErrorToast } from "../PopUpToast";
 
-const TTS = ({ ssml, audioEnded, autoplay }) => {
+const TTS = ({ ssml, audioEnded, autoplay, audioStarted }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [url, setUrl] = useState("");
     const audioPlayerRef = useRef(null);
@@ -30,6 +30,7 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
                 const response = await processSpeech(ssml);
                 const newUrl = URL.createObjectURL(response);
                 setUrl(newUrl);
+                audioStarted(true);
                 
                 // Cleanup previous URL
                 if (url) {
@@ -39,6 +40,7 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
             } catch (error) {
                 showErrorToast('Failed to process speech. Please try again.');
                 console.error('Error processing speech:', error);
+                audioEnded(false);
             }
         };
         

@@ -65,8 +65,7 @@ app.post("/voice", async (req, res) => {
                 ssmlGender: 'MALE'
             },
             audioConfig: { 
-                audioEncoding: 'MP3',
-                model: 'latest-short'  // Use the latest short-form (casual) voice model
+                audioEncoding: 'MP3'
             },
         };
 

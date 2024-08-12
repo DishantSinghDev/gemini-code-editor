@@ -203,6 +203,11 @@ const Landing = () => {
             theme={theme.value}
             codeChanged={codeChanged}
             removePrevCode={true}
+            animationEnds={(bool) => {
+              if (bool) {
+                handleCompile();
+              }
+            }}
           />
         </div>
 

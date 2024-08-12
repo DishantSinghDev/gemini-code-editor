@@ -8,6 +8,7 @@ const CodeEditorWindow = ({
   theme,
   typingSpeed = 200,
   codeChanged,
+  animationEnds = () => {},
   removePrevCode = false // Default to false
 }) => {
   const [value, setValue] = useState("");
@@ -39,6 +40,7 @@ const CodeEditorWindow = ({
       } else {
         clearInterval(interval);
         setIsReadOnly(false); // Enable the editor when animation ends
+        animationEnds(true);
       }
     }, typingSpeed); // Use typingSpeed prop
   };

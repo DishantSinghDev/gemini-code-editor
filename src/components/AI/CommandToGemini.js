@@ -5,7 +5,7 @@ import { useParseResponse } from "../../utils/parse-gen-code";
 import PopUpToast, { showSuccessToast, showErrorToast } from "../PopUpToast";
 
 
-const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeLang }) => {
+const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, genCode, codeLang }) => {
     const [error, setError] = useState(null); // Added state for error handling
     const [response, setResponse] = useState(null); // State to store the response
 
@@ -27,7 +27,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd, code, genCode, codeL
 
 User Code: [${code}]
 
-Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an "appropriate greeting." For questions or tutorial requests, use proper code and best practices to demonstrate the answer. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points in SSML format only. For non-code requests, respond in SSML format only, without markdown or emojis.`);
+Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an appropriate greetings. For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points in SSML format only. For non-code requests, respond in SSML format only, without markdown or emojis.`);
                     setResponse(response); // Store the response in state
                     console.log("response", response);
                     responseEnd(true)
@@ -50,7 +50,7 @@ Instructions: You are already in use by the user, so act accordingly. Respond co
     return (
         <div>
             <PopUpToast />
-            <TTS audioEnded={audioEnded} autoplay={true} ssml={ssmlText} />
+            <TTS audioEnded={audioEnded} audioStarted={audioStarted} autoplay={true} ssml={ssmlText} />
             {error && <p className="text-sm text-red-500">{error}</p>} {/* Display error if any */}
         </div>
     );
