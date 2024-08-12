@@ -61,7 +61,7 @@ app.post("/voice", async (req, res) => {
             input: { ssml },
             voice: {
                 languageCode: 'en-US',
-                name: 'en-US-neural2-H',  // Example of a casual voice
+                name: 'en-US-Studio-Q',  // Example of a casual voice
                 ssmlGender: 'MALE'
             },
             audioConfig: { 
