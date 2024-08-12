@@ -55,7 +55,6 @@ function MicToT({ code, generateCode, codeLanguage }) {
                     mic.start();
                     console.log("Mic started");
                 } catch {
-                    showErrorToast("Error starting the microphone");
                 }
                 console.error(event.error);
             };
