@@ -47,6 +47,7 @@ const TTS = ({ ssml, audioEnded, autoplay }) => {
         if (autoplay && url) {
             playAudio()
         }
+        
         return () => {
             if (url) {
                 URL.revokeObjectURL(url);

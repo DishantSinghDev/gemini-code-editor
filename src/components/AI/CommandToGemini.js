@@ -9,6 +9,7 @@ export function fecthContent() {
 const GenerateContent = ({ prompt, audioEnded, responseEnd, code }) => {
     const [ssml, setSsml] = useState("");
     const [genCode, setGenCode] = useState("")
+    const [language, setLanguage] = useState("en-US");
     const [error, setError] = useState(null); // Added state for error handling
 
     useEffect(() => {
@@ -18,7 +19,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd, code }) => {
                 if (prompt) { // Ensure prompt is not empty before making the request
                     const response = await generateContent(`User Prompt: ${prompt}, User Code: [${code}]. Act like you are a professional coder with great communication skills. If the user prompt is a general greeting like "hi," respond with just "the greetings back" and nothing else. For other specific requests requiring code, generate the {code enclosed}. Provide other texts in (SSML format only no markdown) for improved voice interaction.`);
                     console.log(response)
-                    
+
                     setSsml(response);
                     responseEnd(true)
                 }
