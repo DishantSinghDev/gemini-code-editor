@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 const PORT = 5555;
 const apiKey = process.env.GEMINI_API_KEY
-const credentails = '/root/gemini-api/gemini-code-editor/credentials/credentials.json'
+const credentials = '/root/gemini-api/gemini-code-editor/credentials/credentials.json'
 
 // Use CORS middleware to allow requests from different origins
 app.use(cors({
