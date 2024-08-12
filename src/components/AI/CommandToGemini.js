@@ -6,7 +6,7 @@ export function fecthContent() {
 
 }
 
-const GenerateContent = ({ prompt, audioEnded, responseEnd }) => {
+const GenerateContent = ({ prompt, audioEnded, responseEnd, code }) => {
     const [ssml, setSsml] = useState("");
     const [error, setError] = useState(null); // Added state for error handling
 
@@ -15,7 +15,7 @@ const GenerateContent = ({ prompt, audioEnded, responseEnd }) => {
             try {
                 setError(null); // Clear any previous errors
                 if (prompt) { // Ensure prompt is not empty before making the request
-                    const response = await generateContent(`${prompt}. Act like you are a professional coder with great communication skills. If the input is a general greeting like "hi," respond with just "the greetings back" and nothing else. For other specific requests requiring code, generate the {code enclosed in curly braces} at the top. Provide tutorials or suggestions in (SSML format only no markdown) below the code for improved voice interaction.`);
+                    const response = await generateContent(`User Prompt: ${prompt}, User Code: [${code}]. Act like you are a professional coder with great communication skills. If the user prompt is a general greeting like "hi," respond with just "the greetings back" and nothing else. For other specific requests requiring code, generate the {code enclosed}. Provide other texts in (SSML format only no markdown) for improved voice interaction.`);
                     console.log(response)
                     setSsml(response);
                     responseEnd(true)

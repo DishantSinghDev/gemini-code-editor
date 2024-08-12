@@ -217,7 +217,7 @@ const Landing = () => {
           <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
         </div>
         <div className="px-4">
-          <MicToT />
+          <MicToT code={code} />
         </div>
       </div>
       <div className="flex flex-row space-x-4 items-start px-4 py-4">

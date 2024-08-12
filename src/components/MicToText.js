@@ -10,7 +10,7 @@ import BarIcon from "./shared/icons/animatedBar";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const mic = new SpeechRecognition();
 
-function MicToT() {
+function MicToT({code}) {
     const [isListening, setIsListening] = useState(false);
     const [note, setNote] = useState("");
     const [analyzerData, setAnalyzerData] = useState(null);
@@ -204,7 +204,7 @@ function MicToT() {
                 </button>
             </form>
             <div>
-                <GenerateContent responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
+                <GenerateContent code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
     );
