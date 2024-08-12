@@ -11,6 +11,7 @@ const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, 
 
     // Call useParseResponse at the top level
     const { ssmlText, extCode, language } = useParseResponse(response);
+    console.log("ssmlText", ssmlText);
 
     useEffect(() => {
         if (extCode && language) {
