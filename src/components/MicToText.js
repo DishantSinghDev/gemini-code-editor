@@ -36,6 +36,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 mic.start();
                 console.log("Mic started");
             } catch {
+                startMic()
                 showErrorToast("Error starting the microphone");
             }
             isMicRunningRef.current = true;
@@ -226,7 +227,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 <GenerateContent audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
-        
+
         </>
     );
 }
