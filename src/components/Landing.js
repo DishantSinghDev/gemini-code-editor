@@ -81,6 +81,11 @@ const Landing = () => {
     return unsubscribe;
   }, []);
 
+  // Function to get file extension
+  const getExtension = (filename) => {
+    return filename.substring(filename.lastIndexOf('.'));
+  };
+
   // Handle file name fetching
   useEffect(() => {
     if (accessToken && fileName && user) {
@@ -89,7 +94,8 @@ const Landing = () => {
           const fileNames = await fetchAllFileNames(accessToken, "GeminiIDE", handleFileFetched, handleFileFetching);
           setCurrentFileName(fileNames[0]);
           setFileName(fileNames[0]);
-          
+          const ext = getExtension(fileNames[0]);
+          onSelectChange(languageOptions.find((l) => l.extension === ext));
         } catch (error) {
           console.error("Error fetching content:", error);
         }
@@ -146,7 +152,7 @@ const Landing = () => {
       if (timeoutFNRef.current) {
         clearTimeout(timeoutFNRef.current);
       }
-      
+
       timeoutFNRef.current = setTimeout(() => {
         console.log("File name changing...");
         updateFileName(accessToken, "GeminiIDE", currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
@@ -302,7 +308,7 @@ const Landing = () => {
   // Handle file name fetching
   const handleFileFetched = (file) => {
     if (file) {
-      setCloudFetched(true); 
+      setCloudFetched(true);
       setCloudError(false);
       setCloudLoading(false);
     }
