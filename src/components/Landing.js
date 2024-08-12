@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CodeEditorWindow from "./CodeEditorWindow";
 import axios from "axios";
 import { classnames } from "../utils/general";
@@ -19,52 +19,155 @@ import MicToT from "./MicToText";
 import SignIn from "./SignInPopUp";
 import { auth, signInWithGooglePopup } from "../utils/firebase.utils";
 import { onAuthStateChanged } from "firebase/auth";
+import useLocalStorage from "../hooks/use-local-storage";
+import createOrUpdateFile from "./GoogleDrive/createFiles";
+import fetchFileContent from "./GoogleDrive/fetchFileContent";
+import CloudIcon from "./shared/icons/cloudIcon";
+import updateFileName from "./GoogleDrive/updateFileName";
+import fetchAllFileNames from "./GoogleDrive/fetchFileName";
 
+// Default code for a new file
 const javascriptDefault = ``;
 
 const Landing = () => {
+  // State management
   const [code, setCode] = useState(javascriptDefault);
   const [customInput, setCustomInput] = useState("");
   const [outputDetails, setOutputDetails] = useState(null);
-  const [processing, setProcessing] = useState(false); // Changed from null to false
+  const [processing, setProcessing] = useState(false);
   const [theme, setTheme] = useState("cobalt");
   const [language, setLanguage] = useState(languageOptions[0]);
   const [user, setUser] = useState(null);
   const [codeChanged, setCodeChanged] = useState(true);
+  const [fileName, setFileName] = useState("index.js");
+  const [accessToken, _] = useLocalStorage('accessToken', '');
+  const [cloudLoading, setCloudLoading] = useState(false);
+  const [cloudFetched, setCloudFetched] = useState(false);
+  const [cloudError, setCloudError] = useState(false);
+  const [currentFileName, setCurrentFileName] = useState("index.js");
+
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
-
-  const onSelectChange = (sl) => {
-    console.log("Selected Option...", sl);
-    setLanguage(sl);
+  // Handle language selection change
+  const onSelectChange = (selectedLanguage) => {
+    setLanguage(selectedLanguage);
+    const newFileName = `index${selectedLanguage.extension}`;
+    setFileName(newFileName);
   };
+
+  // Handle theme change
+  const handleThemeChange = (newTheme) => {
+    if (["light", "vs-dark"].includes(newTheme.value)) {
+      setTheme(newTheme);
+    } else {
+      defineTheme(newTheme.value).then(() => setTheme(newTheme));
+    }
+  };
+
+  // Fetch and set the initial theme
+  useEffect(() => {
+    defineTheme("oceanic-next").then(() =>
+      setTheme({ value: "oceanic-next", label: "Oceanic Next" })
+    );
+  }, []);
+
+  // Handle Firebase authentication state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user || null);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Handle file name fetching
+  useEffect(() => {
+    if (accessToken && fileName && user) {
+      const fetchContent = async () => {
+        try {
+          const fileNames = await fetchAllFileNames(accessToken, "GeminiIDE", handleFileFetched, handleFileFetching);
+          setCurrentFileName(fileNames[0]);
+          setFileName(fileNames[0]);
+          
+        } catch (error) {
+          console.error("Error fetching content:", error);
+        }
+      };
+
+      fetchContent();
+    }
+  }, [accessToken, user, currentFileName]);
+
+  // handle file content fetching
+  useEffect(() => {
+    if (accessToken && fileName && user) {
+      const fetchContent = async () => {
+        try {
+          const content = await fetchFileContent(accessToken, "GeminiIDE", fileName, handleContentFetched, handleContentFetching);
+          setCode(content);
+          setCodeChanged(!codeChanged);
+        } catch (error) {
+          console.error("Error fetching content:", error);
+        }
+      };
+
+      fetchContent();
+    }
+  }, [fileName]);
+
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (enterPress && ctrlPress) {
-      handleCompile();
-    }
-  }, [ctrlPress, enterPress]);
 
-  const onChange = (action, data) => {
-    switch (action) {
-      case "code": {
-        setCode(data);
-        break;
+    if (accessToken && code && fileName && user) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
-      default: {
-        console.warn("Action not handled!", action, data);
-      }
-    }
-  };
 
+      timeoutRef.current = setTimeout(() => {
+        createOrUpdateFile(accessToken, fileName, code, handleFileCreated, handleFileLoad);
+      }, 2000);
+
+      return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+      };
+    }
+  }, [accessToken, code, user]);
+
+  // on File name change
+  const timeoutFNRef = useRef(null);
+
+  useEffect(() => {
+
+    if (accessToken && code && fileName && user) {
+      if (timeoutFNRef.current) {
+        clearTimeout(timeoutFNRef.current);
+      }
+      
+      timeoutFNRef.current = setTimeout(() => {
+        console.log("File name changing...");
+        updateFileName(accessToken, "GeminiIDE", currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
+        setCurrentFileName(fileName);
+      }, 2000);
+
+      return () => {
+        if (timeoutFNRef.current) {
+          clearTimeout(timeoutFNRef.current);
+        }
+      };
+    }
+  }, [accessToken, fileName, user]);
+
+  // Compile code and handle responses
   const handleCompile = () => {
-
     setProcessing(true);
     const formData = {
       language_id: language.id,
       source_code: encode(code), // Encode source code in base64
-      stdin: encode(customInput)
+      stdin: encode(customInput),
     };
 
     const options = {
@@ -90,7 +193,7 @@ const Landing = () => {
         const status = err.response ? err.response.status : null;
 
         if (status === 429) {
-          showErrorToast(`Quota of 100 requests exceeded for the Day! Please try again later.`, 10000);
+          showErrorToast("Quota of 100 requests exceeded for the Day! Please try again later.", 10000);
         }
         setProcessing(false);
         showErrorToast("Error during axios request!");
@@ -98,6 +201,7 @@ const Landing = () => {
       });
   };
 
+  // Check the status of the compilation
   const checkStatus = async (token) => {
     const options = {
       method: "GET",
@@ -120,7 +224,7 @@ const Landing = () => {
       } else {
         setProcessing(false);
         setOutputDetails(response.data);
-        showSuccessToast(`Compiled Successfully!`);
+        showSuccessToast("Compiled Successfully!");
       }
     } catch (err) {
       console.error("Error fetching status:", err);
@@ -129,48 +233,121 @@ const Landing = () => {
     }
   };
 
-  const handleThemeChange = (th) => {
-    if (["light", "vs-dark"].includes(th.value)) {
-      setTheme(th);
+  // Handle file creation and loading
+  const handleFileCreated = (file) => {
+    if (file) {
+      setCloudFetched(true);
+      setCloudError(false);
+      setCloudLoading(false);
     } else {
-      defineTheme(th.value).then(() => setTheme(th));
+      showErrorToast("Failed to create file!");
+
+      setCloudFetched(false);
+      setCloudError(true);
+      setCloudLoading(false);
     }
   };
 
-  useEffect(() => {
-    defineTheme("oceanic-next").then(() =>
-      setTheme({ value: "oceanic-next", label: "Oceanic Next" })
-    );
-  }, []);
+  const handleFileLoad = (file) => {
+    if (file) {
+      console.log("File creation loading...");
+      setCloudFetched(false);
+      setCloudError(false);
+      setCloudLoading(true);
+    }
+  };
+
+  const handleContentFetched = (content) => {
+    if (content) {
+      showSuccessToast("File content fetched successfully!");
+      setCloudFetched(true);
+      setCloudError(false);
+      setCloudLoading(false);
+    }
+  };
+
+  const handleContentFetching = (content) => {
+    if (content) {
+      console.log("Fetching content...");
+      setCloudFetched(false);
+      setCloudError(false);
+      setCloudLoading(true);
+    }
+  };
+
+  // Handle file name change
+  const handleFileNameChanged = (bool) => {
+    if (bool) {
+      setCloudFetched(true);
+      setCloudError(false);
+      setCloudLoading(false);
+    } else {
+      showErrorToast("Failed to change file name!");
+
+      setCloudFetched(false);
+      setCloudError(true);
+      setCloudLoading(false);
+    }
+  };
+
+  const handleFileNameChanging = (bool) => {
+    if (bool) {
+      console.log("File name changing...");
+      setCloudFetched(false);
+      setCloudError(false);
+      setCloudLoading(true);
+    }
+  };
+
+  // Handle file name fetching
+  const handleFileFetched = (file) => {
+    if (file) {
+      setCloudFetched(true); 
+      setCloudError(false);
+      setCloudLoading(false);
+    }
+  };
+
+  const handleFileFetching = (file) => {
+    if (file) {
+      console.log("Fetching file name...");
+      setCloudFetched(false);
+      setCloudError(false);
+      setCloudLoading(true);
+    }
+  };
 
 
 
-  const handleGenCode = (code) => {
-    if (code) {
-      setCode(code);
+  // Handle code and language changes
+  const onChange = (action, data) => {
+    if (action === "code") {
+      setCode(data);
+    } else {
+      console.warn("Action not handled!", action, data);
+    }
+  };
+
+  const handleGenCode = (generatedCode) => {
+    if (generatedCode) {
+      setCode(generatedCode);
       setCodeChanged(!codeChanged);
     }
-  }
+  };
 
-  const handleCodeLanguage = (language) => {
-    if (language) {
-      const lang = languageOptions.find((l) => l.value === language);
-      onSelectChange(lang);
+  const handleCodeLanguage = (languageValue) => {
+    if (languageValue) {
+      const selectedLanguage = languageOptions.find((l) => l.value === languageValue);
+      onSelectChange(selectedLanguage);
     }
-  }
+  };
 
-  // Firebase Auth
+  // Handle key press events
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+    if (enterPress && ctrlPress && user) {
+      handleCompile();
+    }
+  }, [ctrlPress, enterPress]);
 
   return (
     <>
@@ -194,6 +371,15 @@ const Landing = () => {
           <></>
         )}
       </div>
+      {user ? (
+
+        <div className="flex flex-row gap-3 space-x-4 items-center px-4 py-4">
+          <input type="text" className="py-2.5 px-5 me-2 ml-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" value={fileName} onChange={(e) => setFileName(e.target.value)} />
+          <CloudIcon cloudError={cloudError} cloudFetched={cloudFetched} cloudLoading={cloudLoading} />
+        </div>
+      ) : (
+        <> </>
+      )}
       <div className="flex flex-row space-x-4 items-start px-4 py-4">
         <div className="flex flex-col w-full h-full justify-start items-end">
           <CodeEditorWindow

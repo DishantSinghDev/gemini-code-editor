@@ -36,7 +36,6 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 mic.start();
                 console.log("Mic started");
             } catch {
-                startMic()
                 showErrorToast("Error starting the microphone");
             }
             isMicRunningRef.current = true;
@@ -52,6 +51,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
             };
 
             mic.onerror = (event) => {
+                showErrorToast("Error starting the microphone");
                 console.error(event.error);
             };
         }
@@ -191,7 +191,6 @@ function MicToT({ code, generateCode, codeLanguage }) {
         <>
         <PopUpToast />
         <div className="flex gap-2 w-fit items-center">
-            <LangsDropdown onSelectChange={onSelectChange} />
             <button
                 onClick={() => setIsListening((prevState) => !prevState)}
                 aria-label={isListening ? "Stop recording" : "Start recording"}

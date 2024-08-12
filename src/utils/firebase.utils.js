@@ -23,12 +23,33 @@ if (typeof window !== "undefined") {
 
 // Initialize Firebase Auth provider
 const provider = new GoogleAuthProvider();
-// Force the user to select an account during sign-in
+// Add scopes for Google Drive
 provider.addScope('https://www.googleapis.com/auth/drive');
 provider.addScope('https://www.googleapis.com/auth/drive.file');
+// Force the user to select an account during sign-in
 provider.setCustomParameters({   
     prompt: "select_account"
 });
 
 export const auth = getAuth(app);
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+
+// Function to sign in with Google and return the access token
+export const signInWithGooglePopup = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    
+    // Get the access token from the result
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const accessToken = credential.accessToken;
+
+    // Optionally, you can also get the user info
+    const user = result;
+
+    // Return the access token and user information
+    return { accessToken, user };
+
+  } catch (error) {
+    console.error("Error signing in with Google:", error);
+    throw error;
+  }
+};

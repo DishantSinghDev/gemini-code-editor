@@ -3,21 +3,30 @@ import { auth, signInWithGooglePopup } from "../utils/firebase.utils";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Popover, Avatar, Spinner } from "flowbite-react";
 import { LogOut, Settings, User } from "lucide-react";
+import useLocalStorage from "../hooks/use-local-storage";
+import createFolder from "./GoogleDrive/createFolder";
 
 export default function SignIn() {
     const [user, setUser] = useState(null);
     const [signInClicked, setSignInClicked] = useState(false);
     const [image, setImage] = useState(""); // Add state for image
     const [email, setEmail] = useState(""); // Add state for email
+    const [value, setValue] = useLocalStorage('accessToken', '');
+
 
     const logGoogleUser = async () => {
         setSignInClicked(true);
         try {
-            const response = await signInWithGooglePopup();
-            console.log(response);
-            setUser(response.user);
-            setImage(response.user.photoURL);
-            setEmail(response.user.email);
+            const { accessToken, user } = await signInWithGooglePopup();
+            console.log(user);
+            setUser(user.user);
+            setImage(user.user.photoURL);
+            setEmail(user.user.email);
+            if (accessToken) {
+                createFolder(accessToken, "GeminiIDE");
+                setValue(accessToken);
+            }
+
         } catch (error) {
             console.error("Error signing in:", error);
         } finally {
@@ -34,20 +43,20 @@ export default function SignIn() {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-          if (currentUser) {
-            setUser(currentUser);
-            setImage(currentUser.photoURL);
-            setEmail(currentUser.email);
-          } else {
-            setUser(null);
-            setImage("");
-            setEmail("");
-          }
+            if (currentUser) {
+                setUser(currentUser);
+                setImage(currentUser.photoURL);
+                setEmail(currentUser.email);
+            } else {
+                setUser(null);
+                setImage("");
+                setEmail("");
+            }
         });
-    
+
         return () => unsubscribe(); // Cleanup subscription on unmount
     }, []);
-    
+
     return (
         <div className="absolute right-2 top-5">
             {user ? (

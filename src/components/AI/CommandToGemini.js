@@ -11,7 +11,6 @@ const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, 
 
     // Call useParseResponse at the top level
     const { ssmlText, extCode, language } = useParseResponse(response);
-    console.log("ssmlText", ssmlText);
 
     useEffect(() => {
         if (extCode && language) {
@@ -28,7 +27,7 @@ const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, 
 
 User Code: [${code}]
 
-Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an "appropriate greeting." For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points. For all other responses, strictly write in SSML format only, enclosed within a single '<speak>' tag at the start and a '</speak>' tag at the end.
+Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an appropriate greetings. For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points. For all other responses, strictly write in SSML format only, enclosed within a single '<speak>' tag at the start and a '</speak>' tag at the end.
 `);
                     setResponse(response); // Store the response in state
                     console.log("response", response);
