@@ -10,7 +10,7 @@ import BarIcon from "./shared/icons/animatedBar";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const mic = new SpeechRecognition();
 
-function MicToT({code}) {
+function MicToT({ code, generateCode, codeLanguage }) {
     const [isListening, setIsListening] = useState(false);
     const [note, setNote] = useState("");
     const [analyzerData, setAnalyzerData] = useState(null);
@@ -32,10 +32,10 @@ function MicToT({code}) {
     const startMic = () => {
         if (!isMicRunningRef.current) {
             try {
-                console.log("mic Started")
                 mic.start();
+                console.log("Mic started");
             } catch {
-                
+
             }
             isMicRunningRef.current = true;
             mic.onend = () => {
@@ -46,7 +46,6 @@ function MicToT({code}) {
                 const transcript = Array.from(event.results)
                     .map((result) => result[0].transcript)
                     .join(" ");
-                console.log(transcript)
                 setNote(note + " " + transcript);
             };
 
@@ -59,10 +58,9 @@ function MicToT({code}) {
     const stopMic = () => {
         if (isMicRunningRef.current) {
             try {
-                console.log("mic stopped")
                 mic.stop();
             } catch {
-                
+
             }
             isMicRunningRef.current = false;
         }
@@ -97,11 +95,11 @@ function MicToT({code}) {
             console.error("SpeechRecognition is not supported in this browser.");
             return;
         }
-    
+
         mic.continuous = true;
         mic.interimResults = true;
         mic.lang = language;
-    
+
         if (isListening) {
             startMic();
             setupAudioContext();
@@ -112,7 +110,7 @@ function MicToT({code}) {
                 audioContextRef.current = null;
             }
         }
-    
+
         return () => {
             stopMic()
             if (audioContextRef.current) {
@@ -121,7 +119,7 @@ function MicToT({code}) {
             }
         };
     }, [isListening, language]);
-    
+
 
     const handleNoteChange = (event) => {
         setNote(event.target.value);
@@ -129,8 +127,8 @@ function MicToT({code}) {
 
     const handleAudioEnded = (bool) => {
         if (bool) {
-            console.log("audio ended", bool)
             setIsListening(true);
+            
             setNote("")
         }
     };
@@ -152,6 +150,7 @@ function MicToT({code}) {
     const handleResponseEnd = (bool) => {
         if (bool) {
             setLoading(false);
+            setNote("");
             setPrompt("");
             setIsListening(false);
         }
@@ -168,6 +167,19 @@ function MicToT({code}) {
             return () => clearTimeout(timeoutId);
         }
     }, [note]);
+
+    const genCode = (extCode) => {
+        if (extCode) {
+            generateCode(extCode)
+        }
+    }
+
+    const codeLang = (language) => {
+        if (language) {
+            codeLanguage(language)
+        }
+    }
+
 
     return (
         <div className="flex gap-2 w-fit items-center">
@@ -204,7 +216,7 @@ function MicToT({code}) {
                 </button>
             </form>
             <div>
-                <GenerateContent code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
+                <GenerateContent genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
     );

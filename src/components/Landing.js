@@ -57,6 +57,7 @@ const Landing = () => {
   const [processing, setProcessing] = useState(false); // Changed from null to false
   const [theme, setTheme] = useState("cobalt");
   const [language, setLanguage] = useState(languageOptions[0]);
+  const [codeChanged, setCodeChanged] = useState(true);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
@@ -86,6 +87,10 @@ const Landing = () => {
   };
 
   const handleCompile = () => {
+    console.log("API URL:", process.env.REACT_APP_RAPID_API_URL);
+console.log("API Host:", process.env.REACT_APP_RAPID_API_HOST);
+console.log("API Key:", process.env.REACT_APP_RAPID_API_KEY);
+
     setProcessing(true);
     const formData = {
       language_id: language.id,
@@ -192,6 +197,20 @@ const Landing = () => {
     });
   };
 
+  const handleGenCode = (code) => {
+    if (code) {
+      setCode(code);
+      setCodeChanged(!codeChanged);
+    }
+  }
+
+  const handleCodeLanguage = (language) => {
+    if (language) {
+      const lang = languageOptions.find((l) => l.value === language);
+      onSelectChange(lang);
+    }
+  }
+
   return (
     <>
       <ToastContainer
@@ -211,13 +230,13 @@ const Landing = () => {
       <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600"></div>
       <div className="flex flex-row">
         <div className="px-4 py-2">
-          <LanguagesDropdown onSelectChange={onSelectChange} />
+          <LanguagesDropdown languageSelected={language} onSelectChange={onSelectChange} />
         </div>
         <div className="px-4 py-2">
           <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
         </div>
         <div className="px-4">
-          <MicToT code={code} />
+          <MicToT code={code} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
         </div>
       </div>
       <div className="flex flex-row space-x-4 items-start px-4 py-4">
@@ -227,6 +246,8 @@ const Landing = () => {
             onChange={onChange}
             language={language?.value}
             theme={theme.value}
+            codeChanged={codeChanged}
+            removePrevCode={true}
           />
         </div>
 
