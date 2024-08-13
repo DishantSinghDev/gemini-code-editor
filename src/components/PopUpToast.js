@@ -1,30 +1,28 @@
 
 import { ToastContainer, toast } from "react-toastify";
 
+const toastConfig = {
+    position: "top-right",
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+};
+
 export const showSuccessToast = (msg) => {
     toast.success(msg || `Compiled Successfully!`, {
-        position: "top-right",
+        ...toastConfig,
         autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
     });
 };
 
-export const showErrorToast = (msg, timer) => {
+export const showErrorToast = (msg, timer = 1000) => {
     toast.error(msg || `Something went wrong! Please try again.`, {
-        position: "top-right",
-        autoClose: timer || 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
+        ...toastConfig,
+        autoClose: timer,
     });
 };
-
 export default function PopUpToast() {
     return (
         <ToastContainer

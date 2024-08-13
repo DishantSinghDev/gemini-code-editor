@@ -1,6 +1,7 @@
+import createOrUpdateFile from "./createFiles";
 import createFolder from "./createFolder";
 
-const fetchFileContent = async (accessToken, folderName, fileName, contentFetched, contentFetching) => {
+const fetchFileContent = async (accessToken, folderName, fileName, contentFetched = () => {}, contentFetching = () => {}) => {
     if (!accessToken || !folderName || !fileName) {
         console.error('Access token, folder name, and file name are required.');
         return;
@@ -15,26 +16,8 @@ const fetchFileContent = async (accessToken, folderName, fileName, contentFetche
         console.log(`Found folder: ${folderID}`);
 
         // Fetch file ID based on file name within the folder
-        const fileResponse = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and '${folderID}' in parents&fields=files(id,name)`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Accept': 'application/json',
-            },
-        });
+        const fileId = await createOrUpdateFile(accessToken, false, folderName, fileName);
 
-        if (!fileResponse.ok) {
-            const errorData = await fileResponse.json().catch(() => ({}));
-            throw new Error(`Error fetching file ID: ${fileResponse.status} ${fileResponse.statusText} - ${errorData.error?.message || 'Unknown error'}`);
-        }
-
-        const fileData = await fileResponse.json();
-        if (fileData.files.length === 0) {
-            throw new Error('File not found in the specified folder');
-        }
-
-        const fileId = fileData.files[0].id;
-        console.log(`Fetching content for file: ${fileData.files[0].name}`);
 
         // Request file content
         const fileContentResponse = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {

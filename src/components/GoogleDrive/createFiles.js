@@ -61,12 +61,12 @@ const getFileIdByName = async (accessToken, fileName, folderId) => {
 };
 
 
-const createOrUpdateFile = async (accessToken, fileName, content, fileCreated, fileLoading) => {
+const createOrUpdateFile = async (accessToken, update = true, folderName, fileName, content = "", fileCreated = () => { }, fileLoading = () => { }) => {
     if (accessToken && fileName) {
         try {
             fileLoading(true);
             // Get the folder ID for "GeminiIDE"
-            const folderId = await createFolder(accessToken, 'GeminiIDE');
+            const folderId = await createFolder(accessToken, folderName);
             const mimeType = getMimeType(fileName);
 
             // Check if the file already exists
@@ -81,7 +81,7 @@ const createOrUpdateFile = async (accessToken, fileName, content, fileCreated, f
             let method;
             let url;
 
-            if (fileId) {
+            if (fileId && update) {
                 // Update existing file
                 method = 'PATCH';
                 url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart&addParents=${folderId}`;
@@ -94,6 +94,10 @@ Content-Type: ${mimeType}
 
 ${content}
 --boundary--`;
+            } else if (fileId && !update) {
+                // return file id
+                return fileId;
+
             } else {
                 // Create new file
                 method = 'POST';
@@ -125,9 +129,10 @@ ${content}
             }
 
             const data = await response.json();
-            console.log(`File '${fileName}' ${fileId ? 'updated' : 'created'} successfully in the 'GeminiIDE' folder!`);
+            console.log(`File '${fileName}' ${fileId ? 'updated' : 'created'} successfully in the ${folderName} folder!`);
             console.log('File Details:', data);
             fileCreated(true);
+            return data.id; // Return the ID of the created or updated file
         } catch (error) {
             console.error('Error:', error);
             fileCreated(false);

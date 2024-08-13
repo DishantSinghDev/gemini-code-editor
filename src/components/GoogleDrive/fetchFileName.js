@@ -1,7 +1,7 @@
 // Assuming fetchFolder is already implemented and returns the folder ID based on the folder name
 import createFolder from './createFolder'; // Adjust the path as necessary
 
-const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetched, fileFetching) => {
+const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetched= () => {}, fileFetching= () => {}) => {
     if (!accessToken || !folderName) {
         console.error('Access token and folder name are required.');
         return null; // or handle it as needed

@@ -1,6 +1,6 @@
 import createFolder from './createFolder'; // Adjust the path as necessary
 
-const updateFileName = async (accessToken,folderName="GeminiIDE", currentFileName, newFileName, fileNameChanged, fileNameChanging) => {
+const updateFileName = async (accessToken, folderName, currentFileName, newFileName, fileNameChanged = () => { }, fileNameChanging = () => { }) => {
     if (!accessToken || !folderName || !currentFileName || !newFileName) {
         console.error('Access token, folder name, current file name, and new file name are required.');
         return null; // or handle it as needed

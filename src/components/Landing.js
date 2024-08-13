@@ -49,6 +49,8 @@ const Landing = () => {
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
+  const folderName = "GeminiIDE";
+
   // Handle language selection change
   const onSelectChange = (selectedLanguage) => {
     setLanguage(selectedLanguage);
@@ -91,11 +93,13 @@ const Landing = () => {
     if (accessToken && fileName && user) {
       const fetchContent = async () => {
         try {
-          const fileNames = await fetchAllFileNames(accessToken, "GeminiIDE", handleFileFetched, handleFileFetching);
-          setCurrentFileName(fileNames[0]);
-          setFileName(fileNames[0]);
-          const ext = getExtension(fileNames[0]);
-          onSelectChange(languageOptions.find((l) => l.extension === ext));
+          const fileNames = await fetchAllFileNames(accessToken, folderName, handleFileFetched, handleFileFetching);
+          if (fileNames.length !== 0) {
+            setCurrentFileName(fileNames[0]);
+            setFileName(fileNames[0]);
+            const ext = getExtension(fileNames[0]);
+            onSelectChange(languageOptions.find((l) => l.extension === ext));
+          }
         } catch (error) {
           console.error("Error fetching content:", error);
         }
@@ -110,9 +114,11 @@ const Landing = () => {
     if (accessToken && fileName && user) {
       const fetchContent = async () => {
         try {
-          const content = await fetchFileContent(accessToken, "GeminiIDE", fileName, handleContentFetched, handleContentFetching);
-          setCode(content);
-          setCodeChanged(!codeChanged);
+          const content = await fetchFileContent(accessToken, folderName, fileName, handleContentFetched, handleContentFetching);
+          if (content) {
+            setCode(content);
+            setCodeChanged(!codeChanged);
+          }
         } catch (error) {
           console.error("Error fetching content:", error);
         }
@@ -120,7 +126,9 @@ const Landing = () => {
 
       fetchContent();
     }
-  }, [fileName]);
+  }, [currentFileName, user]);
+
+  // Create or update file
 
   const timeoutRef = useRef(null);
 
@@ -132,7 +140,7 @@ const Landing = () => {
       }
 
       timeoutRef.current = setTimeout(() => {
-        createOrUpdateFile(accessToken, fileName, code, handleFileCreated, handleFileLoad);
+        createOrUpdateFile(accessToken, folderName, fileName, code, handleFileCreated, handleFileLoad);
       }, 2000);
 
       return () => {
@@ -155,8 +163,10 @@ const Landing = () => {
 
       timeoutFNRef.current = setTimeout(() => {
         console.log("File name changing...");
-        updateFileName(accessToken, "GeminiIDE", currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
-        setCurrentFileName(fileName);
+        const filen = updateFileName(accessToken, folderName, currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
+        if (filen) {
+          setCurrentFileName(fileName);
+        }
       }, 2000);
 
       return () => {

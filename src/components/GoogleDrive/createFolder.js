@@ -20,9 +20,10 @@ const createFolder = async (accessToken, folderName) => {
             const errorText = await listResponse.text();
             throw new Error(`Error checking folder: ${listResponse.status} ${listResponse.statusText}. ${errorText}`);
         }
-
+        
         const listData = await listResponse.json();
-
+        
+        console.log("List Folder",listData)
         if (listData.files.length > 0) {
             // Folder exists
             const existingFolderId = listData.files[0].id;
