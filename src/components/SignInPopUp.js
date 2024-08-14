@@ -22,9 +22,8 @@ export default function SignIn({ userAuthenticated }) {
             setEmail(user.user.email);
 
             if (accessToken) {
-                console.log(accessToken);
                 // Store the access token in a cookie
-                const expiresIn = 3600; // Token validity in seconds (1 hour)
+                const expiresIn = 3200; // Token validity in seconds (1 hour)
                 const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
 
                 Cookies.set('accessToken', accessToken, { expires: expirationDate });

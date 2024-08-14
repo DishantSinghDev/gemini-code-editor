@@ -1,10 +1,11 @@
 // Assuming fetchFolder is already implemented and returns the folder ID based on the folder name
-import { checkAndRefreshToken } from '../../utils/accessToken-validity';
+import { checkAndRefreshToken } from '../../utils/accessToken';
+import createOrUpdateFile from './createFiles';
 import createFolder from './createFolder'; // Adjust the path as necessary
 
-const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetched= () => {}, fileFetching= () => {}) => {
-    const isRefreshTokenValid = await checkAndRefreshToken();
-    if (!accessToken || !folderName || !isRefreshTokenValid) {
+const fetchAllFileNames = async (folderName="GeminiIDE", fileFetched= () => {}, fileFetching= () => {}) => {
+    const accessToken = await checkAndRefreshToken();
+    if (!accessToken || !folderName) {
         console.error('Access token and folder name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
@@ -12,7 +13,7 @@ const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetche
     try {
         fileFetching(true);
         // Get the folder ID using the fetchFolder function
-        const folderId = await createFolder(accessToken, folderName);
+        const folderId = await createFolder(folderName);
 
         if (!folderId) {
             console.log(`Folder '${folderName}' not found.`);
@@ -38,8 +39,12 @@ const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetche
         const searchData = await searchResponse.json();
 
         if (searchData.files.length === 0) {
-            console.log(`No files found in folder '${folderName}'.`);
-            return []; // No files found
+            console.log(`No files found in folder '${folderId}'.searchData`,searchData);
+            const fileId = await createOrUpdateFile(false, folderName, "index.js");
+            console.log(`File ID: ${fileId}`);
+            if(fileId){
+                return ["index.js"]; // No files found
+            }
         }
 
         // Extract file names from the response

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { signInWithGooglePopup } from '../utils/firebase.utils';
+import { signInWithGooglePopup } from './firebase.utils';
 
 export const checkAndRefreshToken = async () => {
     const accessToken = Cookies.get('accessToken');
@@ -10,7 +10,7 @@ export const checkAndRefreshToken = async () => {
     }
 
     // If the access token is still valid (i.e., cookie hasn't expired)
-    return true;
+    return accessToken;
 };
 
 const reAuthenticateUser = async () => {
@@ -20,17 +20,17 @@ const reAuthenticateUser = async () => {
         if (accessToken) {
             console.log(accessToken);
             // Store the access token in a cookie
-            const expiresIn = 3600; // Token validity in seconds (1 hour)
+            const expiresIn = 3200; // Token validity in seconds (1 hour)
             const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
 
             Cookies.set('accessToken', accessToken, { expires: expirationDate });
-            return true;
+            return accessToken;
         } else {
-            return false;
+            return "";
         }
 
     } catch (error) {
         console.error("Error during re-authentication:", error);
-        return false;
+        return "";
     }
 };

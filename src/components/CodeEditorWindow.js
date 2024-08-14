@@ -6,7 +6,7 @@ const CodeEditorWindow = ({
   language = "javascript",
   code,
   theme,
-  typingSpeed = 200,
+  typingSpeed = 50,
   codeChanged,
   animationEnds = () => {},
   removePrevCode = false // Default to false

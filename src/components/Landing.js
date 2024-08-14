@@ -39,26 +39,18 @@ const Landing = () => {
   const [language, setLanguage] = useState(languageOptions[0]);
   const [user, setUser] = useState(null);
   const [codeChanged, setCodeChanged] = useState(true);
-  const [fileName, setFileName] = useState("index.js");
-  const [accessToken, setAccessToken] = useState("");
+  const [fileName, setFileName] = useState("");
   const [cloudLoading, setCloudLoading] = useState(false);
   const [cloudFetched, setCloudFetched] = useState(false);
   const [cloudError, setCloudError] = useState(false);
   const [userChanged, setUserChanged] = useState(false);
-  const [currentFileName, setCurrentFileName] = useState("index.js");
+  const [currentFileName, setCurrentFileName] = useState("");
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
   const folderName = "GeminiIDE";
 
-  // Retrieve the access token from the cookie
-  useEffect(() => {
-    const accessToken = Cookies.get('accessToken');
-    if (accessToken) {
-      setAccessToken(accessToken);
-    }
-  }, []);
 
 
   // Handle language selection change
@@ -100,10 +92,10 @@ const Landing = () => {
 
   // Handle file name fetching
   useEffect(() => {
-    if (accessToken && fileName && user) {
-      const fetchContent = async () => {
+    if (user) {
+      const fetchFiles = async () => {
         try {
-          const fileNames = await fetchAllFileNames(accessToken, folderName, handleFileFetched, handleFileFetching);
+          const fileNames = await fetchAllFileNames(folderName, handleFileFetched, handleFileFetching);
           if (fileNames.length !== 0) {
             setCurrentFileName(fileNames[0]);
             setFileName(fileNames[0]);
@@ -115,16 +107,17 @@ const Landing = () => {
         }
       };
 
-      fetchContent();
+      fetchFiles();
     }
-  }, [accessToken, user, currentFileName]);
+  }, [user]);
+
 
   // handle file content fetching
   useEffect(() => {
-    if (accessToken && fileName && user) {
+    if (currentFileName && user) {
       const fetchContent = async () => {
         try {
-          const content = await fetchFileContent(accessToken, folderName, fileName, handleContentFetched, handleContentFetching);
+          const content = await fetchFileContent(folderName, currentFileName, handleContentFetched, handleContentFetching);
           if (content) {
             setCode(content);
             setCodeChanged(!codeChanged);
@@ -143,49 +136,67 @@ const Landing = () => {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-
-    if (accessToken && code && fileName && user) {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        createOrUpdateFile(accessToken, true, folderName, fileName, code, handleFileCreated, handleFileLoad);
-      }, 2000);
-
-      return () => {
+    const updateFileAsync = async () => {
+      if (code && fileName && user) {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-      };
-    }
-  }, [accessToken, code, user]);
+  
+        timeoutRef.current = setTimeout(async () => {
+          try {
+            await createOrUpdateFile(true, folderName, fileName, code, handleFileCreated, handleFileLoad);
+          } catch (error) {
+            console.error("Error creating or updating file:", error);
+          }
+        }, 2000);
+  
+        return () => {
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
+        };
+      }
+    };
+  
+    updateFileAsync();
+  }, [code, fileName, user]);
+  
 
   // on File name change
   const timeoutFNRef = useRef(null);
 
   useEffect(() => {
-
-    if (accessToken && fileName && user) {
+  const updateFileNameAsync = async () => {
+    if (fileName && currentFileName && user) {
       if (timeoutFNRef.current) {
         clearTimeout(timeoutFNRef.current);
       }
 
-      timeoutFNRef.current = setTimeout(() => {
+      timeoutFNRef.current = setTimeout(async () => {
         console.log("File name changing...");
-        const filen = updateFileName(accessToken, folderName, currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
-        if (filen) {
-          setCurrentFileName(fileName);
+        try {
+          const filen = await updateFileName(folderName, currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
+          if (filen) {
+            setCurrentFileName(fileName);
+            const ext = getExtension(filen);
+            onSelectChange(languageOptions.find((l) => l.extension === ext));
+          }
+        } catch (error) {
+          console.error("Error updating file name:", error);
         }
       }, 2000);
-
-      return () => {
-        if (timeoutFNRef.current) {
-          clearTimeout(timeoutFNRef.current);
-        }
-      };
     }
-  }, [accessToken, fileName, user]);
+
+    return () => {
+      if (timeoutFNRef.current) {
+        clearTimeout(timeoutFNRef.current);
+      }
+    };
+  };
+
+  updateFileNameAsync();
+}, [fileName, user]);
+
 
   // Compile code and handle responses
   const handleCompile = () => {

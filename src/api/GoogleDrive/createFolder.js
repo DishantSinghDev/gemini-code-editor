@@ -1,13 +1,11 @@
-import { checkAndRefreshToken } from "../../utils/accessToken-validity";
+import { checkAndRefreshToken } from "../../utils/accessToken";
 
-const createFolder = async (accessToken, folderName) => {
-    const isRefreshTokenValid = await checkAndRefreshToken();
-    if (!accessToken || !folderName || !isRefreshTokenValid) {
+const createFolder = async (folderName) => {
+    const accessToken = await checkAndRefreshToken();
+    if (!accessToken || !folderName) {
         console.error('Access token and folder name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
-    console.log("Access Token",accessToken)
-
     try {
         // Check if the folder already exists
         const listResponse = await fetch(
@@ -31,7 +29,7 @@ const createFolder = async (accessToken, folderName) => {
         if (listData.files.length > 0) {
             // Folder exists
             const existingFolderId = listData.files[0].id;
-            console.log(`Folder '${folderName}' already exists.`);
+            console.log(`Folder '${folderName}' already exists. with ID: ${existingFolderId}`);
             return existingFolderId;
         }
 

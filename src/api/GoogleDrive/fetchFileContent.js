@@ -1,10 +1,10 @@
-import { checkAndRefreshToken } from "../../utils/accessToken-validity";
+import { checkAndRefreshToken } from "../../utils/accessToken";
 import createOrUpdateFile from "./createFiles";
 import createFolder from "./createFolder";
 
-const fetchFileContent = async (accessToken, folderName, fileName, contentFetched = () => {}, contentFetching = () => {}) => {
-    const isRefreshTokenValid = await checkAndRefreshToken();
-    if (!accessToken || !folderName || !isRefreshTokenValid) {
+const fetchFileContent = async (folderName, fileName, contentFetched = () => {}, contentFetching = () => {}) => {
+    const accessToken = await checkAndRefreshToken();
+    if (!accessToken || !folderName) {
         console.error('Access token, file Name and folder name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
@@ -13,12 +13,12 @@ const fetchFileContent = async (accessToken, folderName, fileName, contentFetche
         contentFetching(true);
 
         // Fetch folder ID based on folder name
-        const folderID = await createFolder(accessToken, folderName);
+        const folderID = await createFolder(folderName);
 
         console.log(`Found folder: ${folderID}`);
 
         // Fetch file ID based on file name within the folder
-        const fileId = await createOrUpdateFile(accessToken, false, folderName, fileName);
+        const fileId = await createOrUpdateFile(false, folderName, fileName);
 
 
         // Request file content
