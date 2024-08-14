@@ -23,7 +23,7 @@ export default function SignIn() {
             setImage(user.user.photoURL);
             setEmail(user.user.email);
             if (accessToken) {
-                createFolder(accessToken, "GeminiIDE");
+                console.log(accessToken);
                 setValue(accessToken);
             }
 
