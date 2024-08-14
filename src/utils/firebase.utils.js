@@ -5,15 +5,14 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 // Firebase configuration object
 console.log(process.env.FIREBASE_API_KEY);
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
-  measurementId: process.env.FIREBASE_MEASUREMENT_ID
+  apiKey: "AIzaSyBcfTmKknicWuUPJPlpeY5qBXFXoSS4y-k",
+  authDomain: "gemini-code-editor.firebaseapp.com",
+  projectId: "gemini-code-editor",
+  storageBucket: "gemini-code-editor.appspot.com",
+  messagingSenderId: "960088162288",
+  appId: "1:960088162288:web:2286b078aafb6104df2735",
+  measurementId: "G-4S2PWWHKT8"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -28,9 +27,9 @@ const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/drive');
 provider.addScope('https://www.googleapis.com/auth/drive.file');
 // Force the user to select an account during sign-in
-provider.setCustomParameters({   
-    prompt: "select_account"
-});
+// provider.setCustomParameters({   
+//     prompt: "select_account"
+// });
 
 export const auth = getAuth(app);
 

@@ -3,15 +3,13 @@ import { auth, signInWithGooglePopup } from "../utils/firebase.utils";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Popover, Avatar, Spinner } from "flowbite-react";
 import { LogOut, Settings, User } from "lucide-react";
-import useLocalStorage from "../hooks/use-local-storage";
-import createFolder from "./GoogleDrive/createFolder";
+import Cookies from "js-cookie";
 
-export default function SignIn() {
+export default function SignIn({ userAuthenticated }) {
     const [user, setUser] = useState(null);
     const [signInClicked, setSignInClicked] = useState(false);
     const [image, setImage] = useState(""); // Add state for image
     const [email, setEmail] = useState(""); // Add state for email
-    const [value, setValue] = useLocalStorage('accessToken', '');
 
 
     const logGoogleUser = async () => {
@@ -22,12 +20,19 @@ export default function SignIn() {
             setUser(user.user);
             setImage(user.user.photoURL);
             setEmail(user.user.email);
+
             if (accessToken) {
                 console.log(accessToken);
-                setValue(accessToken);
+                // Store the access token in a cookie
+                const expiresIn = 3600; // Token validity in seconds (1 hour)
+                const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+
+                Cookies.set('accessToken', accessToken, { expires: expirationDate });
+                userAuthenticated(true)
             }
 
         } catch (error) {
+            userAuthenticated(false)
             console.error("Error signing in:", error);
         } finally {
             setSignInClicked(false);
@@ -39,6 +44,8 @@ export default function SignIn() {
         setUser(null);
         setImage("");
         setEmail("");
+        userAuthenticated(false)
+        Cookies.remove('accessToken'); // Remove the token on logout
     };
 
     useEffect(() => {

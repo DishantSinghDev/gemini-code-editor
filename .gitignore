@@ -27,3 +27,5 @@ yarn-error.log*
 .env
 .env.build
 .vercel
+
+/src/utils/firebase.utils.js

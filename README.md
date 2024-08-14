@@ -1,9 +1,16 @@
+# CodeRush - Compile and Execute code in 40+ languages
+
+⚡️ A code editor that compiles and runs your code on the web.
+Blog: <a href="https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/" target="__blank">FreeCodeCamp - Build A Code IDE with React</a>
+
+<img src="https://github.com/manuarora700/react-code-editor/blob/main/demo.png" />
 
 ## Features: 
 - Compile and execute code in 40+ programming languages.
 - Switch themes from a list of available themes.
 - Gemini API integrated
 - Google TTS for speech
+- Uses your unused Google Drive Storage to save and access coding files.
 
 ## Installations and setup
 
@@ -13,7 +20,8 @@
 - Create a `.env` file.
 - Add the API Keys in the `.env` file
 - `npm start` to run the project.
-
+- `cd server` to get to express app
+- `node server.js` to run the express app 
 
 
 TODO:
@@ -23,4 +31,5 @@ TODO:
 3. User Profile Page 
 4. Save code functionality (Firestore - use Slug based approach)
 5. Share code functionality
-
+6. Increase Gemini Memory for better communication
+7. Use Google Drive API to add and use multiple files together

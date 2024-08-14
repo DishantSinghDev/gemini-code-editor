@@ -1,10 +1,12 @@
+import { checkAndRefreshToken } from "../../utils/accessToken-validity";
 import createOrUpdateFile from "./createFiles";
 import createFolder from "./createFolder";
 
 const fetchFileContent = async (accessToken, folderName, fileName, contentFetched = () => {}, contentFetching = () => {}) => {
-    if (!accessToken || !folderName || !fileName) {
-        console.error('Access token, folder name, and file name are required.');
-        return;
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    if (!accessToken || !folderName || !isRefreshTokenValid) {
+        console.error('Access token, file Name and folder name are required. Refresh the Page.');
+        return null; // or handle it as needed
     }
 
     try {

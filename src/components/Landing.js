@@ -17,14 +17,14 @@ import ThemeDropdown from "./ThemeDropdown";
 import LanguagesDropdown from "./LanguagesDropdown";
 import MicToT from "./MicToText";
 import SignIn from "./SignInPopUp";
-import { auth, signInWithGooglePopup } from "../utils/firebase.utils";
+import { auth } from "../utils/firebase.utils";
 import { onAuthStateChanged } from "firebase/auth";
-import useLocalStorage from "../hooks/use-local-storage";
-import createOrUpdateFile from "./GoogleDrive/createFiles";
-import fetchFileContent from "./GoogleDrive/fetchFileContent";
+import Cookies from "js-cookie";
+import createOrUpdateFile from "../api/GoogleDrive/createFiles";
+import fetchFileContent from "../api/GoogleDrive/fetchFileContent";
 import CloudIcon from "./shared/icons/cloudIcon";
-import updateFileName from "./GoogleDrive/updateFileName";
-import fetchAllFileNames from "./GoogleDrive/fetchFileName";
+import updateFileName from "../api/GoogleDrive/updateFileName";
+import fetchAllFileNames from "../api/GoogleDrive/fetchFileName";
 
 // Default code for a new file
 const javascriptDefault = ``;
@@ -40,16 +40,26 @@ const Landing = () => {
   const [user, setUser] = useState(null);
   const [codeChanged, setCodeChanged] = useState(true);
   const [fileName, setFileName] = useState("index.js");
-  const [accessToken, _] = useLocalStorage('accessToken', '');
+  const [accessToken, setAccessToken] = useState("");
   const [cloudLoading, setCloudLoading] = useState(false);
   const [cloudFetched, setCloudFetched] = useState(false);
   const [cloudError, setCloudError] = useState(false);
+  const [userChanged, setUserChanged] = useState(false);
   const [currentFileName, setCurrentFileName] = useState("index.js");
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
 
   const folderName = "GeminiIDE";
+
+  // Retrieve the access token from the cookie
+  useEffect(() => {
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      setAccessToken(accessToken);
+    }
+  }, []);
+
 
   // Handle language selection change
   const onSelectChange = (selectedLanguage) => {
@@ -81,7 +91,7 @@ const Landing = () => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [userChanged]);
 
   // Function to get file extension
   const getExtension = (filename) => {
@@ -140,7 +150,7 @@ const Landing = () => {
       }
 
       timeoutRef.current = setTimeout(() => {
-        createOrUpdateFile(accessToken, folderName, fileName, code, handleFileCreated, handleFileLoad);
+        createOrUpdateFile(accessToken, true, folderName, fileName, code, handleFileCreated, handleFileLoad);
       }, 2000);
 
       return () => {
@@ -156,7 +166,7 @@ const Landing = () => {
 
   useEffect(() => {
 
-    if (accessToken && code && fileName && user) {
+    if (accessToken && fileName && user) {
       if (timeoutFNRef.current) {
         clearTimeout(timeoutFNRef.current);
       }
@@ -365,11 +375,16 @@ const Landing = () => {
     }
   }, [ctrlPress, enterPress]);
 
+  const handleUserAuthChanged = (bool) => {
+    // not much use of boolean comming from SignIn
+    setUserChanged(!userChanged);
+  }
+
   return (
     <>
       <PopUpToast />
 
-      <SignIn />
+      <SignIn userAuthenticated={handleUserAuthChanged} />
 
       <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600"></div>
       <div className="flex flex-row">

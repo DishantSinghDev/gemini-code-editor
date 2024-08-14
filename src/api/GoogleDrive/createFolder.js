@@ -1,8 +1,12 @@
+import { checkAndRefreshToken } from "../../utils/accessToken-validity";
+
 const createFolder = async (accessToken, folderName) => {
-    if (!accessToken || !folderName) {
-        console.error('Access token and folder name are required.');
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    if (!accessToken || !folderName || !isRefreshTokenValid) {
+        console.error('Access token and folder name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
+    console.log("Access Token",accessToken)
 
     try {
         // Check if the folder already exists

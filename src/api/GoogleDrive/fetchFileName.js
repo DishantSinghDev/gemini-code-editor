@@ -1,9 +1,11 @@
 // Assuming fetchFolder is already implemented and returns the folder ID based on the folder name
+import { checkAndRefreshToken } from '../../utils/accessToken-validity';
 import createFolder from './createFolder'; // Adjust the path as necessary
 
 const fetchAllFileNames = async (accessToken, folderName="GeminiIDE", fileFetched= () => {}, fileFetching= () => {}) => {
-    if (!accessToken || !folderName) {
-        console.error('Access token and folder name are required.');
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    if (!accessToken || !folderName || !isRefreshTokenValid) {
+        console.error('Access token and folder name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
 

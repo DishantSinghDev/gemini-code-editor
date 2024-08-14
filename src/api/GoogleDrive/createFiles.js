@@ -1,3 +1,4 @@
+import { checkAndRefreshToken } from '../../utils/accessToken-validity';
 import createFolder from './createFolder';
 const mimeTypes = {
     '.html': 'text/html',
@@ -29,6 +30,11 @@ const getMimeType = (fileName) => {
 };
 
 const getFileIdByName = async (accessToken, fileName, folderId) => {
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    if (!accessToken || !fileName || !isRefreshTokenValid) {
+        console.error('Access token and file name are required. Refresh the Page.');
+        return null; // or handle it as needed
+    }
     try {
         // Create URL search parameters
         const params = new URLSearchParams({
@@ -62,7 +68,12 @@ const getFileIdByName = async (accessToken, fileName, folderId) => {
 
 
 const createOrUpdateFile = async (accessToken, update = true, folderName, fileName, content = "", fileCreated = () => { }, fileLoading = () => { }) => {
-    if (accessToken && fileName) {
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    if (!accessToken || !folderName || !fileName || !isRefreshTokenValid) {
+        console.error('Access token, file name and folder name are required. Refresh the Page.');
+        return null; // or handle it as needed
+    
+    }
         try {
             fileLoading(true);
             // Get the folder ID for "GeminiIDE"
@@ -139,9 +150,6 @@ ${content}
         } finally {
             fileLoading(false);
         }
-    } else {
-        console.error('Access token, file name, and content are required.');
-    }
 };
 
 

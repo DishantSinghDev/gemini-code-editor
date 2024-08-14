@@ -1,8 +1,11 @@
+import { checkAndRefreshToken } from '../../utils/accessToken-validity';
 import createFolder from './createFolder'; // Adjust the path as necessary
 
 const updateFileName = async (accessToken, folderName, currentFileName, newFileName, fileNameChanged = () => { }, fileNameChanging = () => { }) => {
+    const isRefreshTokenValid = await checkAndRefreshToken();
+    
     if (!accessToken || !folderName || !currentFileName || !newFileName) {
-        console.error('Access token, folder name, current file name, and new file name are required.');
+        console.error('Access token, folder name, current file name, and new file name are required. Refresh the Page.');
         return null; // or handle it as needed
     }
 
