@@ -23,8 +23,7 @@
 
 ## Tutorial
 
-- Use the speaking audio icon to listen for the first time, then it auto speaks
-<img src="https://i.ibb.co/L19jVQJ/Screenshot-2024-08-15-at-12-22-47-PM.png"/>
+- Use the speaking audio icon to listen for the first time, then it auto speaks <img src="https://i.ibb.co/L19jVQJ/Screenshot-2024-08-15-at-12-22-47-PM.png"/>
 - Use custom input when the code wants some input from user.
 - If you get a mic error `Error occurred while listening. Please try again.` then mute and unmute the mic again. [this error will be solved in future updates]
 - You can directly put the text in command to get the output without speaking into mic
