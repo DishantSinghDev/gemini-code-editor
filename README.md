@@ -21,6 +21,16 @@
 - `node server.js` to run the express app 
 
 
+## Tutorial
+
+- Use the speaking audio icon to listen for the first time, then it auto speaks
+<img src="https://i.ibb.co/L19jVQJ/Screenshot-2024-08-15-at-12-22-47-PM.png"/>
+- Use custom input when the code wants some input from user.
+- If you get a mic error `Error occurred while listening. Please try again.` then mute and unmute the mic again. [this error will be solved in future updates]
+- You can directly put the text in command to get the output without speaking into mic
+- You will get poped up with sign in window in around every 1 hr to refresh the tokens for getting access to your google drive
+- `GeminiIDE` folder is the only folder that this app use to create files and update them [No other data is fetched or proccessed]
+
 TODO:
 
 1. Add more languages [DONE]

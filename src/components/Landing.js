@@ -44,7 +44,6 @@ const Landing = () => {
   const [cloudError, setCloudError] = useState(false);
   const [userChanged, setUserChanged] = useState(false);
   const [currentFileName, setCurrentFileName] = useState("");
-  const [fetchFileCont, setFetchFileCont] = useState(false);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
@@ -90,48 +89,36 @@ const Landing = () => {
     return filename.substring(filename.lastIndexOf('.'));
   };
 
-  // Handle file name fetching
+
+
+  // handle file names and content fetching
   useEffect(() => {
     if (user) {
       const fetchFiles = async () => {
         try {
           const fileNames = await fetchAllFileNames(folderName, handleFileFetched, handleFileFetching);
           if (fileNames.length !== 0) {
-            setCurrentFileName(fileNames[0]);
-            setFileName(fileNames[0]);
-            const ext = getExtension(fileNames[0]);
+            const fileName = fileNames[0];
+            setCurrentFileName(fileName);
+            const ext = getExtension(fileName);
             onSelectChange(languageOptions.find((l) => l.extension === ext));
+  
+            // Fetch content for the fetched file name
+            const content = await fetchFileContent(folderName, fileName, handleContentFetched, handleContentFetching);
+            if (content) {
+              setCode(content);
+              setCodeChanged(!codeChanged);
+            }
           }
         } catch (error) {
           console.error("Error fetching content:", error);
         }
       };
-
+  
       fetchFiles();
     }
   }, [user]);
-
-
-  // handle file content fetching
-  useEffect(() => {
-    console.log("fetchFileCont", fetchFileCont, currentFileName, user);
-    if (currentFileName && user && fetchFileCont) {
-      const fetchContent = async () => {
-        try {
-          const content = await fetchFileContent(folderName, currentFileName, handleContentFetched, handleContentFetching);
-          if (content) {
-            setCode(content);
-            setCodeChanged(!codeChanged);
-            setFetchFileCont(false);
-          }
-        } catch (error) {
-          console.error("Error fetching content:", error);
-        }
-      };
-
-      fetchContent();
-    }
-  }, [user, currentFileName]);
+  
 
   // Create or update file
 
@@ -339,14 +326,11 @@ const Landing = () => {
   // Handle file name fetching
   const handleFileFetched = (file) => {
     if (file) {
-      setFetchFileCont(true);
       setCloudFetched(true);
       setCloudError(false);
       setCloudLoading(false);
     } else {
       showErrorToast("Failed to fetch file!");
-      setFetchFileCont(false);
-
       setCloudFetched(false);
       setCloudError(true);
       setCloudLoading(false);
