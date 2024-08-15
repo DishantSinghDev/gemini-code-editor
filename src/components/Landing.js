@@ -19,7 +19,6 @@ import MicToT from "./MicToText";
 import SignIn from "./SignInPopUp";
 import { auth } from "../utils/firebase.utils";
 import { onAuthStateChanged } from "firebase/auth";
-import Cookies from "js-cookie";
 import createOrUpdateFile from "../api/GoogleDrive/createFiles";
 import fetchFileContent from "../api/GoogleDrive/fetchFileContent";
 import CloudIcon from "./shared/icons/cloudIcon";
@@ -45,6 +44,7 @@ const Landing = () => {
   const [cloudError, setCloudError] = useState(false);
   const [userChanged, setUserChanged] = useState(false);
   const [currentFileName, setCurrentFileName] = useState("");
+  const [fetchFileCont, setFetchFileCont] = useState(false);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
@@ -114,13 +114,15 @@ const Landing = () => {
 
   // handle file content fetching
   useEffect(() => {
-    if (currentFileName && user) {
+    console.log("fetchFileCont", fetchFileCont, currentFileName, user);
+    if (currentFileName && user && fetchFileCont) {
       const fetchContent = async () => {
         try {
           const content = await fetchFileContent(folderName, currentFileName, handleContentFetched, handleContentFetching);
           if (content) {
             setCode(content);
             setCodeChanged(!codeChanged);
+            setFetchFileCont(false);
           }
         } catch (error) {
           console.error("Error fetching content:", error);
@@ -129,7 +131,7 @@ const Landing = () => {
 
       fetchContent();
     }
-  }, [currentFileName, user]);
+  }, [user, currentFileName]);
 
   // Create or update file
 
@@ -141,61 +143,59 @@ const Landing = () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-  
+
         timeoutRef.current = setTimeout(async () => {
           try {
             await createOrUpdateFile(true, folderName, fileName, code, handleFileCreated, handleFileLoad);
           } catch (error) {
             console.error("Error creating or updating file:", error);
           }
-        }, 2000);
-  
-        return () => {
-          if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-          }
-        };
+        }, 5000);
       }
     };
-  
+
     updateFileAsync();
-  }, [code, fileName, user]);
-  
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [code, user]);
+
 
   // on File name change
   const timeoutFNRef = useRef(null);
-
   useEffect(() => {
-  const updateFileNameAsync = async () => {
-    if (fileName && currentFileName && user) {
-      if (timeoutFNRef.current) {
-        clearTimeout(timeoutFNRef.current);
-      }
-
-      timeoutFNRef.current = setTimeout(async () => {
-        console.log("File name changing...");
-        try {
-          const filen = await updateFileName(folderName, currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
-          if (filen) {
-            setCurrentFileName(fileName);
-            const ext = getExtension(filen);
-            onSelectChange(languageOptions.find((l) => l.extension === ext));
-          }
-        } catch (error) {
-          console.error("Error updating file name:", error);
+    const updateFileNameAsync = async () => {
+      if (fileName && currentFileName && user && fileName !== currentFileName) {
+        if (timeoutFNRef.current) {
+          clearTimeout(timeoutFNRef.current);
         }
-      }, 2000);
-    }
+        timeoutFNRef.current = setTimeout(async () => {
+          console.log("File name changing...");
+          try {
+            const filen = await updateFileName(folderName, currentFileName, fileName, handleFileNameChanged, handleFileNameChanging);
+            if (filen) {
+              setCurrentFileName(fileName);
+              const ext = getExtension(filen);
+              onSelectChange(languageOptions.find((l) => l.extension === ext));
+            }
+          } catch (error) {
+            console.error("Error updating file name:", error);
+          }
+        }, 2000);
+      }
+    };
+
+    updateFileNameAsync();
 
     return () => {
       if (timeoutFNRef.current) {
         clearTimeout(timeoutFNRef.current);
       }
     };
-  };
-
-  updateFileNameAsync();
-}, [fileName, user]);
+  }, [fileName, user]);
 
 
   // Compile code and handle responses
@@ -339,8 +339,16 @@ const Landing = () => {
   // Handle file name fetching
   const handleFileFetched = (file) => {
     if (file) {
+      setFetchFileCont(true);
       setCloudFetched(true);
       setCloudError(false);
+      setCloudLoading(false);
+    } else {
+      showErrorToast("Failed to fetch file!");
+      setFetchFileCont(false);
+
+      setCloudFetched(false);
+      setCloudError(true);
       setCloudLoading(false);
     }
   };

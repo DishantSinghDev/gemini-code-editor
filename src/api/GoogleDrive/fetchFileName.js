@@ -43,7 +43,14 @@ const fetchAllFileNames = async (folderName="GeminiIDE", fileFetched= () => {}, 
             const fileId = await createOrUpdateFile(false, folderName, "index.js");
             console.log(`File ID: ${fileId}`);
             if(fileId){
+                fileFetched(true);
+                fileFetching(false);
+                
                 return ["index.js"]; // No files found
+            } else {
+                fileFetched(false);
+                fileFetching(false);
+                return null;
             }
         }
 

@@ -56,6 +56,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                     console.log("Mic started");
                 } catch {
                 }
+                showErrorToast("Error occurred while listening. Please try again.");
                 console.error(event.error);
             };
         }

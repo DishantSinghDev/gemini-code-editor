@@ -1,9 +1,6 @@
-# CodeRush - Compile and Execute code in 40+ languages
+# Gemini Code Editor - Generate code using voice or text, save to Google Drive, and compile
 
-⚡️ A code editor that compiles and runs your code on the web.
-Blog: <a href="https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/" target="__blank">FreeCodeCamp - Build A Code IDE with React</a>
-
-<img src="https://github.com/manuarora700/react-code-editor/blob/main/demo.png" />
+<img src="https://i.ibb.co/3dF0vP2/Screenshot-2024-08-15-at-11-03-59-AM.png" />
 
 ## Features: 
 - Compile and execute code in 40+ programming languages.
