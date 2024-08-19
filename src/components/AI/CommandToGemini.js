@@ -5,7 +5,7 @@ import { useParseResponse } from "../../utils/parse-gen-code";
 import PopUpToast, { showSuccessToast, showErrorToast } from "../PopUpToast";
 
 
-const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, genCode, codeLang, codeOutput, cLang }) => {
+const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, genCode, codeLang, codeOutput, fName }) => {
     const [error, setError] = useState(null); // Added state for error handling
     const [response, setResponse] = useState(null); // State to store the response
 
@@ -27,9 +27,9 @@ const GenerateContent = ({ prompt, audioStarted, audioEnded, responseEnd, code, 
 
 User Code: [${code}]
 
-Code Output: ${codeOutput}
+Code Output: [${codeOutput}]
 
-Code Language: ${cLang}
+File Name: [${fName}]
 
 Instructions: You are already in use by the user, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an appropriate greetings. For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points. For all other responses, strictly write in SSML format only, enclosed within a single '<speak>' tag at the start and a '</speak>' tag at the end.
 `);

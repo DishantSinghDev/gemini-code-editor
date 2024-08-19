@@ -3,7 +3,7 @@ import CodeEditorWindow from "./CodeEditorWindow";
 import axios from "axios";
 import { classnames } from "../utils/general";
 import { languageOptions } from "../constants/languageOptions";
-import { encode } from "base-64";
+import { decode, encode } from "base-64";
 import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 import "react-toastify/dist/ReactToastify.css";
 import { defineTheme } from "../lib/defineTheme";
@@ -246,7 +246,8 @@ const Landing = () => {
         }, 2000);
       } else {
         setProcessing(false);
-        setOutputDetails(response.data);
+        console.log("Output details:", response.data);
+        setOutputDetails(await response.data);
         showSuccessToast("Compiled Successfully!");
       }
     } catch (err) {
@@ -382,6 +383,15 @@ const Landing = () => {
     setUserChanged(!userChanged);
   }
 
+  // Function to decode the output
+  const getDecodedOutput = (outputDetails) => {
+    try {
+      return decode(outputDetails?.stderr) || decode(outputDetails?.stdout) || decode(outputDetails?.compile_output) || "";
+    } catch {
+      return "";
+    }
+  };
+
   return (
     <>
       <PopUpToast />
@@ -398,7 +408,7 @@ const Landing = () => {
         </div>
         {user ? (
           <div className="px-4">
-            <MicToT code={code} cLang={language} codeOutput={outputDetails} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
+            <MicToT code={code} fName={currentFileName} codeOutput={getDecodedOutput(outputDetails)} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
           </div>
         ) : (
           <></>

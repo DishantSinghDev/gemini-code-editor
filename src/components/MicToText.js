@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import WaveForm from "./WaveForm";
 import { Mic, MicOff } from "lucide-react";
-import TTS from "./AI/TTS";
-import LangsDropdown from "./LangDrodown";
 import GenerateContent from "./AI/CommandToGemini";
-import { Spinner } from "flowbite-react";
 import BarIcon from "./shared/icons/animatedBar";
 import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const mic = new SpeechRecognition();
 
-function MicToT({ code, generateCode, codeLanguage, codeOutput, cLang }) {
+function MicToT({ code, generateCode, codeLanguage, codeOutput, fName }) {
     const [isListening, setIsListening] = useState(false);
     const [note, setNote] = useState("");
     const [analyzerData, setAnalyzerData] = useState(null);
@@ -228,7 +225,7 @@ function MicToT({ code, generateCode, codeLanguage, codeOutput, cLang }) {
                 </button>
             </form>
             <div>
-                <GenerateContent codeOutput={codeOutput} cLang={cLang} audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
+                <GenerateContent codeOutput={codeOutput} fName={fName} audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
 
