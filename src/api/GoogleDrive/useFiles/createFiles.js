@@ -1,5 +1,5 @@
-import { checkAndRefreshToken } from '../../utils/accessToken';
-import createFolder from './createFolder';
+import { checkAndRefreshToken } from '../../../utils/accessToken';
+import createFolder from '../useFolders/createFolder';
 const mimeTypes = {
     '.html': 'text/html',
     '.htm': 'text/html',

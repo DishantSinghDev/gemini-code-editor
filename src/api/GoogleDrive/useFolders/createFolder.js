@@ -1,4 +1,4 @@
-import { checkAndRefreshToken } from "../../utils/accessToken";
+import { checkAndRefreshToken } from "../../../utils/accessToken";
 
 const createFolder = async (folderName) => {
     const accessToken = await checkAndRefreshToken();

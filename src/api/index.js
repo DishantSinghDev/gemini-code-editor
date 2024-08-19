@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 // Base URL of your Express API
-const API_URL = process.env.REACT_APP_BACKEND_API; // Update this if your Express server URL changes
+const API_URL = "https://gemini-ide-server.dishantsingh.me"; // Update this if your Express server URL changes
 
 // Function to generate content
 export const generateContent = async (prompt) => {

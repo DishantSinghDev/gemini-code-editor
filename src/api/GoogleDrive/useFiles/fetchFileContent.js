@@ -1,6 +1,6 @@
-import { checkAndRefreshToken } from "../../utils/accessToken";
+import { checkAndRefreshToken } from "../../../utils/accessToken";
 import createOrUpdateFile from "./createFiles";
-import createFolder from "./createFolder";
+import createFolder from "../useFolders/createFolder";
 
 const fetchFileContent = async (folderName, fileName, contentFetched = () => {}, contentFetching = () => {}) => {
     const accessToken = await checkAndRefreshToken();

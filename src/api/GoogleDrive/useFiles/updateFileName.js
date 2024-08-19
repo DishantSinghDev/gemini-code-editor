@@ -1,5 +1,5 @@
-import { checkAndRefreshToken } from '../../utils/accessToken';
-import createFolder from './createFolder'; // Adjust the path as necessary
+import { checkAndRefreshToken } from '../../../utils/accessToken';
+import createFolder from '../useFolders/createFolder'; // Adjust the path as necessary
 import createOrUpdateFile from './createFiles';
 
 const updateFileName = async (folderName, currentFileName, newFileName, fileNameChanged = () => { }, fileNameChanging = () => { }) => {

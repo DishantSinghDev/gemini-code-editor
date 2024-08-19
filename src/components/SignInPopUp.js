@@ -4,13 +4,14 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Popover, Avatar, Spinner } from "flowbite-react";
 import { LogOut, Settings, User } from "lucide-react";
 import Cookies from "js-cookie";
+import { SettingModal } from "./Setting";
 
 export default function SignIn({ userAuthenticated }) {
     const [user, setUser] = useState(null);
     const [signInClicked, setSignInClicked] = useState(false);
     const [image, setImage] = useState(""); // Add state for image
     const [email, setEmail] = useState(""); // Add state for email
-
+    const [showSettingModal, setShowSettingModal] = useState(false);
 
     const logGoogleUser = async () => {
         setSignInClicked(true);
@@ -64,44 +65,44 @@ export default function SignIn({ userAuthenticated }) {
     }, []);
 
     return (
+        <>
+        <SettingModal showSettingModal={showSettingModal} setShowSettingModal={setShowSettingModal} />
         <div className="absolute right-2 top-5">
             {user ? (
                 <Popover
                     trigger="click"
                     placement="bottom-end"
-                    content={
-                        <div className="w-full rounded-md bg-white p-2 md:w-56">
-                            <a
-                                className={`relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100`}
-                                href="/my-account"
-                            >
-                                <User className="h-4 w-4" />
-                                <p className="text-sm">My Account</p>
-                            </a>
-                            <a
-                                className={`relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100`}
-                                href="/settings"
-                            >
-                                <Settings className="h-4 w-4" />
-                                <p className="text-sm">Settings</p>
-                            </a>
-                            <button
-                                className="relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"
-                                onClick={logOutUser}
-                            >
-                                {signInClicked ? (
-                                    <div className="relative flex items-center justify-center">
-                                        <Spinner size="sm" />
-                                    </div>
-                                ) : (
-                                    <>
-                                        <LogOut className="h-4 w-4" />
-                                        <p className="text-sm">Logout</p>
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    }
+                    content={<div className="w-full rounded-md bg-white p-2 md:w-56">
+                        <a
+                            className={`relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100`}
+                            href="/my-account"
+                        >
+                            <User className="h-4 w-4" />
+                            <p className="text-sm">My Account</p>
+                        </a>
+                        <a onClick={() => setShowSettingModal(true)}
+                            className={`relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100`}
+                            href="#"
+                        >
+                            <Settings className="h-4 w-4" />
+                            <p className="text-sm">Settings</p>
+                        </a>
+                        <button
+                            className="relative flex w-full items-center justify-center md:justify-start space-x-2 rounded-md p-2 text-left text-sm transition-all duration-75 hover:bg-gray-100"
+                            onClick={logOutUser}
+                        >
+                            {signInClicked ? (
+                                <div className="relative flex items-center justify-center">
+                                    <Spinner size="sm" />
+                                </div>
+                            ) : (
+                                <>
+                                    <LogOut className="h-4 w-4" />
+                                    <p className="text-sm">Logout</p>
+                                </>
+                            )}
+                        </button>
+                    </div>}
                 >
                     <button
                         className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-gray-300 transition-all duration-75 focus:outline-none active:scale-95 sm:h-9 sm:w-9"
@@ -109,8 +110,7 @@ export default function SignIn({ userAuthenticated }) {
                         <Avatar
                             img={image || `https://avatars.dicebear.com/api/micah/${email}.svg`}
                             rounded
-                            alt={email}
-                        />
+                            alt={email} />
                     </button>
                 </Popover>
             ) : (
@@ -123,6 +123,6 @@ export default function SignIn({ userAuthenticated }) {
                     Sign In
                 </button>
             )}
-        </div>
+        </div></>
     );
 }

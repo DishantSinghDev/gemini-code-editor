@@ -11,7 +11,7 @@ import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const mic = new SpeechRecognition();
 
-function MicToT({ code, generateCode, codeLanguage }) {
+function MicToT({ code, generateCode, codeLanguage, codeOutput, cLang }) {
     const [isListening, setIsListening] = useState(false);
     const [note, setNote] = useState("");
     const [analyzerData, setAnalyzerData] = useState(null);
@@ -228,7 +228,7 @@ function MicToT({ code, generateCode, codeLanguage }) {
                 </button>
             </form>
             <div>
-                <GenerateContent audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
+                <GenerateContent codeOutput={codeOutput} cLang={cLang} audioStarted={handleAudioStarted} genCode={genCode} codeLang={codeLang} code={code} responseEnd={handleResponseEnd} audioEnded={handleAudioEnded} prompt={prompt} />
             </div>
         </div>
 

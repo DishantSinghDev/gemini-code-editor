@@ -11,9 +11,9 @@ import {
   import useWindowSize from "../../hooks/use-window-size";
   
   export default function Modal(
-    children,
+    {children,
     showModal,
-    setShowModal,
+    setShowModal,}
   ) {
     const desktopModalRef = useRef(null);
   

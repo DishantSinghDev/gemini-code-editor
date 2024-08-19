@@ -6,7 +6,6 @@ import { languageOptions } from "../constants/languageOptions";
 import { encode } from "base-64";
 import PopUpToast, { showSuccessToast, showErrorToast } from "./PopUpToast";
 import "react-toastify/dist/ReactToastify.css";
-
 import { defineTheme } from "../lib/defineTheme";
 import useKeyPress from "../hooks/useKeyPress";
 import Footer from "./Footer";
@@ -19,11 +18,11 @@ import MicToT from "./MicToText";
 import SignIn from "./SignInPopUp";
 import { auth } from "../utils/firebase.utils";
 import { onAuthStateChanged } from "firebase/auth";
-import createOrUpdateFile from "../api/GoogleDrive/createFiles";
-import fetchFileContent from "../api/GoogleDrive/fetchFileContent";
+import createOrUpdateFile from "../api/GoogleDrive/useFiles/createFiles";
+import fetchFileContent from "../api/GoogleDrive/useFiles/fetchFileContent";
 import CloudIcon from "./shared/icons/cloudIcon";
-import updateFileName from "../api/GoogleDrive/updateFileName";
-import fetchAllFileNames from "../api/GoogleDrive/fetchFileName";
+import updateFileName from "../api/GoogleDrive/useFiles/updateFileName";
+import fetchAllFileNames from "../api/GoogleDrive/useFiles/fetchFileName";
 
 // Default code for a new file
 const javascriptDefault = ``;
@@ -399,7 +398,7 @@ const Landing = () => {
         </div>
         {user ? (
           <div className="px-4">
-            <MicToT code={code} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
+            <MicToT code={code} cLang={language} codeOutput={outputDetails} generateCode={handleGenCode} codeLanguage={handleCodeLanguage} />
           </div>
         ) : (
           <></>

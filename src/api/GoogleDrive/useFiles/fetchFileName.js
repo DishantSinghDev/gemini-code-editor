@@ -1,7 +1,7 @@
 // Assuming fetchFolder is already implemented and returns the folder ID based on the folder name
-import { checkAndRefreshToken } from '../../utils/accessToken';
+import { checkAndRefreshToken } from '../../../utils/accessToken';
 import createOrUpdateFile from './createFiles';
-import createFolder from './createFolder'; // Adjust the path as necessary
+import createFolder from '../useFolders/createFolder'; // Adjust the path as necessary
 
 const fetchAllFileNames = async (folderName="GeminiIDE", fileFetched= () => {}, fileFetching= () => {}) => {
     const accessToken = await checkAndRefreshToken();
