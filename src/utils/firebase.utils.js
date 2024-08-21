@@ -23,8 +23,7 @@ if (typeof window !== "undefined") {
 
 // Initialize Firebase Auth provider
 const provider = new GoogleAuthProvider();
-// Add scopes for Google Drive
-provider.addScope('https://www.googleapis.com/auth/drive');
+// Add scopes for Google Drive\
 provider.addScope('https://www.googleapis.com/auth/drive.file');
 // Force the user to select an account during sign-in
 // provider.setCustomParameters({   
