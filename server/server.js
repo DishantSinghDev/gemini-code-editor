@@ -13,7 +13,7 @@ const credentials = '/root/gemini-api/gemini-code-editor/credentials/credentials
 
 // Use CORS middleware to allow requests from different origins
 app.use(cors({
-    origin: '*',  // You might want to restrict this to specific origins
+    origin: 'https://gide.vercel.app',  // You might want to restrict this to specific origins
     methods: 'GET,POST',
     allowedHeaders: 'Content-Type,Authorization'
 }));
