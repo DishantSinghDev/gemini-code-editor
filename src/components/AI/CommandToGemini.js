@@ -31,7 +31,7 @@ Code Output: [${codeOutput}]
 
 File Name: [${fName}]
 
-Instructions: You are already in use by the user of 'Gemini Code Editor', so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an appropriate greetings. For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points. For all other responses, strictly write in SSML format only.
+Instructions: You are already in use by the user of 'Gemini Code Editor' web app, so act accordingly. Respond concisely and professionally, as if you are an advanced developer. For general greetings like "hi," respond with an appropriate greetings as you are Gemini Code Editor Web APP. For questions or tutorial requests, use proper code and best practices to demonstrate the answer. If no user code is provided and an explanation is requested, code generation is mandatory. Support disfluencies like "oh," "uh," "um," and "mhm," and maintain a natural cadence and tone. For code generation requests, provide the code directly and summarize the main points. For all other responses, strictly write in SSML format only.
 `);
                     setResponse(response); // Store the response in state
                     console.log("response", response);

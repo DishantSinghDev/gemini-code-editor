@@ -247,7 +247,7 @@ const Landing = () => {
       } else {
         setProcessing(false);
         console.log("Output details:", response.data);
-        setOutputDetails(await response.data);
+        setOutputDetails(response.data);
         showSuccessToast("Compiled Successfully!");
       }
     } catch (err) {
@@ -386,8 +386,16 @@ const Landing = () => {
   // Function to decode the output
   const getDecodedOutput = (outputDetails) => {
     try {
-      return decode(outputDetails?.stderr) || decode(outputDetails?.stdout) || decode(outputDetails?.compile_output) || "";
-    } catch {
+      if (outputDetails?.stdout) {
+        return decode(outputDetails.stdout);
+      } else if (outputDetails?.stderr) {
+        return decode(outputDetails.stderr);
+      } else if (outputDetails?.compile_output) {
+        return decode(outputDetails.compile_output);
+      }
+      return "";
+    } catch (error) {
+      console.error("Error decoding output:", error);
       return "";
     }
   };
