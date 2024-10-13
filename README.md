@@ -13,7 +13,7 @@
 
 - git clone `https://github.com/dishantsinghdev/gemini-code-editor.git`
 - `npm install`
-- A sample `.env.sample` file is given, Register on <a href="https://rapidapi.com/judge0-official/api/judge0-ce/pricing" target="__blank">RapidAPI</a> and get your API keys.
+- A sample `.env.sample` file is given, Register on [Rapid API](https://rapidapi.com/dishis-technologies-judge0/api/judge029/pricing) and get your API keys.
 - Create a `.env` file.
 - Add the API Keys in the `.env` file
 - `npm start` to run the project.
